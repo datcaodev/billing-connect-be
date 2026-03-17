@@ -36,15 +36,16 @@ router.get("/units", exchangeRateController.getUnits);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - targetCurrency
+ *               - rate
  *             properties:
- *               from_currency_code:
+ *               targetCurrency:
  *                 type: string
- *               to_currency_code:
- *                 type: string
+ *                 example: "VND"
  *               rate:
- *                 type: number
- *               status:
  *                 type: string
+ *                 example: "25450"
  *     responses:
  *       200:
  *         description: Thành công

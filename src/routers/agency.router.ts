@@ -25,25 +25,30 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - code
+ *               - name
+ *               - email
+ *               - phone
  *             properties:
+ *               code:
+ *                 type: string
+ *                 example: "AG001"
  *               name:
  *                 type: string
- *               phone_number:
- *                 type: string
+ *                 example: "Đại lý Cầu Giấy"
  *               email:
  *                 type: string
- *               account_bank:
+ *                 example: "caugiay@agency.com"
+ *               phone:
  *                 type: string
- *               account_no:
- *                 type: string
- *               account_name:
- *                 type: string
- *               tax_code:
- *                 type: string
+ *                 example: "0987654321"
  *               address:
  *                 type: string
- *               status:
+ *                 example: "123 Cầu Giấy, Hà Nội"
+ *               website:
  *                 type: string
+ *                 example: "https://agency-caugiay.com"
  *     responses:
  *       200:
  *         description: Thành công
@@ -75,22 +80,19 @@ router.post(
  *             properties:
  *               name:
  *                 type: string
- *               phone_number:
- *                 type: string
+ *                 example: "Đại lý ABC (Cập nhật)"
  *               email:
  *                 type: string
- *               account_bank:
+ *                 example: "update@agency.com"
+ *               phone:
  *                 type: string
- *               account_no:
- *                 type: string
- *               account_name:
- *                 type: string
- *               tax_code:
- *                 type: string
+ *                 example: "0123456789"
  *               address:
  *                 type: string
- *               status:
+ *                 example: "Số 1 Đại Cồ Việt, Hà Nội"
+ *               website:
  *                 type: string
+ *                 example: "https://new-website.com"
  *     responses:
  *       200:
  *         description: Thành công

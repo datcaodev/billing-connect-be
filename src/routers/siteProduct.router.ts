@@ -35,17 +35,24 @@ const siteProductRouter: Router = (() => {
      *             properties:
      *               name:
      *                 type: string
+     *                 example: "Sim Du Lịch Nhật Bản"
      *               desc:
      *                 type: string
+     *                 example: "Sim 4G tốc độ cao, 10GB dung lượng"
      *               image:
      *                 type: string
      *                 format: binary
+     *               image_url:
+     *                 type: string
+     *                 example: "https://example.com/image.jpg"
      *               category_guids:
      *                 type: array
      *                 items:
      *                   type: string
+     *                 example: ["uuid-category-sim", "uuid-category-japan"]
      *               area_guid:
      *                 type: string
+     *                 example: "uuid-area-asia"
      *               variants:
      *                 type: array
      *                 items:
@@ -53,8 +60,10 @@ const siteProductRouter: Router = (() => {
      *                   properties:
      *                     product_sku:
      *                       type: string
+     *                       example: "JP-10GB-7DAYS"
      *                     name:
      *                       type: string
+     *                       example: "Gói 10GB - 7 Ngày"
      *                     options:
      *                       type: array
      *                       items:
@@ -62,11 +71,10 @@ const siteProductRouter: Router = (() => {
      *                         properties:
      *                           copies:
      *                             type: number
+     *                             example: 1
      *                           discount_guid:
      *                             type: string
-     *     responses:
-     *       200:
-     *         description: Thành công
+     *                             example: "uuid-discount-summer"
      */
     router.post(
         "/create",

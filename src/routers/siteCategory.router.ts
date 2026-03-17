@@ -29,10 +29,13 @@ const router = express.Router();
  *             properties:
  *               name:
  *                 type: string
+ *                 example: "Châu Á"
  *               code:
  *                 type: string
+ *                 example: "ASIA"
  *               position:
  *                 type: number
+ *                 example: 1
  *     responses:
  *       200:
  *         description: Thành công
@@ -98,17 +101,17 @@ router.post(
  *             properties:
  *               name:
  *                 type: string
- *                 description: Tên quốc gia
+ *                 example: "Việt Nam"
  *               code:
  *                 type: string
- *                 description: Mã quốc gia
+ *                 example: "VN"
  *               area_guid:
  *                 type: string
  *                 format: uuid
- *                 description: GUID của khu vực (Area)
+ *                 example: "uuid-area-asia"
  *               position:
  *                 type: number
- *                 description: Thứ tự ưu tiên hiển thị
+ *                 example: 1
  *     responses:
  *       200:
  *         description: Thành công

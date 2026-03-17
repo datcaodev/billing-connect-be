@@ -24,25 +24,31 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - type
+ *               - value
+ *               - start_date
+ *               - end_date
  *             properties:
  *               name:
  *                 type: string
- *               discount_type:
+ *                 example: "Giảm giá mùa hè 2024"
+ *               type:
  *                 type: string
- *               discount_value:
+ *                 enum: [PERCENTAGE, FIXED]
+ *                 example: "PERCENTAGE"
+ *               value:
  *                 type: number
- *               status:
- *                 type: string
+ *                 example: 10
  *               start_date:
  *                 type: string
- *                 format: date-time
+ *                 description: "Định dạng DD/MM/YYYY HH:mm:ss"
+ *                 example: "01/06/2024 00:00:00"
  *               end_date:
  *                 type: string
- *                 format: date-time
- *               require_packages_count:
- *                 type: number
- *               description:
- *                 type: string
+ *                 description: "Định dạng DD/MM/YYYY HH:mm:ss"
+ *                 example: "31/08/2024 23:59:59"
  *     responses:
  *       200:
  *         description: Thành công
