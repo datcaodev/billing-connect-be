@@ -21,6 +21,25 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy danh sách quốc gia thành công"
+ *                 data:
+ *                   - code: "VN"
+ *                     name: "Việt Nam"
+ *                   - code: "JP"
+ *                     name: "Nhật Bản"
+ *                   - code: "KR"
+ *                     name: "Hàn Quốc"
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 // lấy danh sách quốc gia
 router.get("/countries", siteController.getAllBillionCountries);

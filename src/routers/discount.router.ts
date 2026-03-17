@@ -52,6 +52,26 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Tạo mã giảm giá thành công"
+ *                 data:
+ *                   id: 1
+ *                   guid: "uuid-discount"
+ *                   name: "Giảm giá mùa hè 2024"
+ *                   type: "PERCENTAGE"
+ *                   value: 10
+ *                   start_date: "2024-06-01T00:00:00.000Z"
+ *                   end_date: "2024-08-31T23:59:59.000Z"
+ *                 error_code: null
+ *                 code: 201
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post("/create", validateRequest(createDiscountSchema, ["body"]), discountController.createDiscount);
 
@@ -81,6 +101,32 @@ router.post("/create", validateRequest(createDiscountSchema, ["body"]), discount
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy danh sách mã giảm giá thành công"
+ *                 data:
+ *                   page: 1
+ *                   size: 10
+ *                   totalCount: 5
+ *                   totalPage: 1
+ *                   result:
+ *                     - id: 1
+ *                       guid: "uuid-discount"
+ *                       name: "Giảm giá mùa hè 2024"
+ *                       type: "PERCENTAGE"
+ *                       value: 10
+ *                       status: "ACTIVE"
+ *                       start_date: "2024-06-01T00:00:00.000Z"
+ *                       end_date: "2024-08-31T23:59:59.000Z"
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.get("/search", validateRequest(searchDiscountSchema, ["query"]), discountController.searchDiscounts);
 

@@ -52,6 +52,28 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Tạo đại lý thành công"
+ *                 data:
+ *                   guid: "uuid-agency"
+ *                   code: "AG001"
+ *                   name: "Đại lý Cầu Giấy"
+ *                   email: "caugiay@agency.com"
+ *                   phone: "0987654321"
+ *                   address: "123 Cầu Giấy, Hà Nội"
+ *                   website: "https://agency-caugiay.com"
+ *                   created_at: "2024-03-17T00:00:00.000Z"
+ *                   updated_at: "2024-03-17T00:00:00.000Z"
+ *                 error_code: null
+ *                 code: 201
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post(
     "/create",
@@ -96,6 +118,19 @@ router.post(
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Cập nhật đại lý thành công"
+ *                 data: true
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post(
     "/update/:guid",
@@ -118,6 +153,19 @@ router.post(
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Xóa đại lý thành công"
+ *                 data: true
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post("/delete/:guid", agencyController.deleteAgency);
 
@@ -147,6 +195,33 @@ router.post("/delete/:guid", agencyController.deleteAgency);
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Tìm kiếm đại lý thành công"
+ *                 data:
+ *                   page: 1
+ *                   size: 10
+ *                   totalCount: 5
+ *                   totalPage: 1
+ *                   result:
+ *                     - guid: "uuid-agency"
+ *                       code: "AG001"
+ *                       name: "Đại lý Cầu Giấy"
+ *                       email: "caugiay@agency.com"
+ *                       phone: "0987654321"
+ *                       address: "123 Cầu Giấy, Hà Nội"
+ *                       website: "https://agency-caugiay.com"
+ *                       created_at: "2024-03-17T00:00:00.000Z"
+ *                       updated_at: "2024-03-17T00:00:00.000Z"
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.get("/search", validateRequest(searchAgencySchema, ["query"]), agencyController.searchAgency);
 
@@ -181,6 +256,19 @@ router.get("/search", validateRequest(searchAgencySchema, ["query"]), agencyCont
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Cập nhật bảng giá đại lý thành công"
+ *                 data: true
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post("/price-table", validateRequest(agencyPriceSchema, ["body"]), agencyPriceController.createAgencyPriceTable);
 
@@ -199,6 +287,23 @@ router.post("/price-table", validateRequest(agencyPriceSchema, ["body"]), agency
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy danh sách gói của đại lý thành công"
+ *                 data:
+ *                   - site_product_guid: "uuid-product-1"
+ *                     package_name: "Gói 10GB 7 Ngày"
+ *                     original_price: 150000
+ *                     agency_price: 120000
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.get("/packages/:agency_guid", validateRequest(agencyGuidParamSchema, ["params"]), agencyPriceController.getAgencyPackages);
 

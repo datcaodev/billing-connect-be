@@ -9,6 +9,6 @@ export class AgencyPaginationDto {
     @Expose({ name: "phone" }) phone: string;
     @Expose({ name: "address" }) address: string;
     @Expose({ name: "website" }) website: string;
-    @Expose({ name: "created_at" }) created_at: Date;
-    @Expose({ name: "updated_at" }) updated_at: Date;
+    @Expose({ name: "created_at" }) createdAt: Date;
+    @Expose({ name: "updated_at" }) updatedAt: Date;
 }

@@ -21,6 +21,23 @@ const router = express.Router()
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Thành công"
+ *                 data:
+ *                   - name: "USD"
+ *                     value: "USD"
+ *                   - name: "CNY"
+ *                     value: "CNY"
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.get("/units", exchangeRateController.getUnits);
 
@@ -49,6 +66,19 @@ router.get("/units", exchangeRateController.getUnits);
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Tạo tỷ giá thành công"
+ *                 data: null
+ *                 error_code: null
+ *                 code: 201
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post("/create", validateRequest(createExchangeRateSchema, ["body"]), exchangeRateController.create);
 
@@ -78,6 +108,29 @@ router.post("/create", validateRequest(createExchangeRateSchema, ["body"]), exch
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Thành công"
+ *                 data:
+ *                   page: 1
+ *                   size: 10
+ *                   totalCount: 20
+ *                   totalPage: 2
+ *                   result:
+ *                     - id: 1
+ *                       currency: "VND"
+ *                       rate: "25450"
+ *                       start_date: "2024-03-17T00:00:00.000Z"
+ *                       end_date: "2024-03-18T00:00:00.000Z"
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.get("/histories", validateRequest(searchExchangeRateHistorySchema, ["query"]), exchangeRateController.searchExchangeRateHistory);
 

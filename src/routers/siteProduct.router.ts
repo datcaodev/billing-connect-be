@@ -75,6 +75,22 @@ const siteProductRouter: Router = (() => {
      *                           discount_guid:
      *                             type: string
      *                             example: "uuid-discount-summer"
+     *     responses:
+     *       200:
+     *         description: Thành công
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               example:
+     *                 success: true
+     *                 message: "Tạo sản phẩm thành công"
+     *                 data: true
+     *                 error_code: null
+     *                 code: 201
+     *                 description: "Message is init response"
+     *                 responseCode: 200
+     *                 timestamp: 1710660000000
      */
     router.post(
         "/create",
@@ -130,6 +146,43 @@ const siteProductRouter: Router = (() => {
      *     responses:
      *       200:
      *         description: Thành công
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               example:
+     *                 success: true
+     *                 message: "Lấy danh sách sản phẩm thành công"
+     *                 data:
+     *                   page: 1
+     *                   size: 10
+     *                   totalCount: 50
+     *                   totalPage: 5
+     *                   result:
+     *                     - guid: "uuid-site-product"
+     *                       name: "Sim Du Lịch Nhật Bản"
+     *                       type: "esim"
+     *                       status: "active"
+     *                       image_url: "https://example.com/image.jpg"
+     *                       slug: "sim-du-lich-nhat-ban"
+     *                       created_at: "2024-03-17T00:00:00.000Z"
+     *                       updated_at: "2024-03-17T00:00:00.000Z"
+     *                       variants:
+     *                         - product_sku: "JP-10GB-7DAYS"
+     *                           plan_type: "daily"
+     *                           name: "Gói 10GB - 7 Ngày"
+     *                           status: "active"
+     *                       categories:
+     *                         - guid: "uuid-category-1"
+     *                           code: "JP"
+     *                           name: "Nhật Bản"
+     *                           country_mcc: "440"
+     *                           parent: null
+     *                 error_code: null
+     *                 code: 200
+     *                 description: "Message is init response"
+     *                 responseCode: 200
+     *                 timestamp: 1710660000000
      */
     router.get(
         "/search",
@@ -153,6 +206,24 @@ const siteProductRouter: Router = (() => {
      *     responses:
      *       200:
      *         description: Thành công
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               example:
+     *                 success: true
+     *                 message: "Lấy danh sách mức giá thành công"
+     *                 data:
+     *                   - product_sku: "JP-10GB-7DAYS"
+     *                     copies: 1
+     *                     original_price: 250000
+     *                     final_price: 200000
+     *                     currency: "CNY"
+     *                 error_code: null
+     *                 code: 200
+     *                 description: "Message is init response"
+     *                 responseCode: 200
+     *                 timestamp: 1710660000000
      */
     router.get(
         "/option-prices/:product_sku",
@@ -176,6 +247,28 @@ const siteProductRouter: Router = (() => {
      *     responses:
      *       200:
      *         description: Thành công
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               example:
+     *                 success: true
+     *                 message: "Lấy danh sách option theo mã giảm giá thành công"
+     *                 data:
+     *                   - product_sku: "JP-10GB-7DAYS"
+     *                     name: "Gói 10GB - 7 Ngày"
+     *                     options:
+     *                       - copies: 1
+     *                         price_id: 10
+     *                         retail_price: 250000
+     *                         original_price: 250000
+     *                         final_price: 200000
+     *                         currency: "CNY"
+     *                 error_code: null
+     *                 code: 200
+     *                 description: "Message is init response"
+     *                 responseCode: 200
+     *                 timestamp: 1710660000000
      */
     router.get(
         "/variants-by-discount/:discount_guid",

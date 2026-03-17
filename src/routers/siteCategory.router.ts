@@ -39,6 +39,27 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Tạo khu vực thành công"
+ *                 data:
+ *                   guid: "uuid-area-asia"
+ *                   name: "Châu Á"
+ *                   code: "ASIA"
+ *                   country_mcc: null
+ *                   position: 1
+ *                   is_active: true
+ *                   created_at: "2024-03-17T00:00:00.000Z"
+ *                   updated_at: "2024-03-17T00:00:00.000Z"
+ *                 error_code: null
+ *                 code: 201
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post(
     "/area/create",
@@ -75,6 +96,19 @@ router.post(
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Cập nhật khu vực thành công"
+ *                 data: true
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post(
     "/area/:guid/update",
@@ -115,6 +149,27 @@ router.post(
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Tạo quốc gia thành công"
+ *                 data:
+ *                   guid: "uuid-country-vn"
+ *                   name: "Việt Nam"
+ *                   code: "VN"
+ *                   country_mcc: "452"
+ *                   position: 1
+ *                   is_active: true
+ *                   created_at: "2024-03-17T00:00:00.000Z"
+ *                   updated_at: "2024-03-17T00:00:00.000Z"
+ *                 error_code: null
+ *                 code: 201
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post(
     "/country/create",
@@ -154,6 +209,19 @@ router.post(
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Cập nhật quốc gia thành công"
+ *                 data: true
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.post(
     "/country/:guid/update",
@@ -191,6 +259,32 @@ router.post(
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy danh sách quốc gia thành công"
+ *                 data:
+ *                   page: 1
+ *                   size: 10
+ *                   totalCount: 20
+ *                   totalPage: 2
+ *                   result:
+ *                     - guid: "uuid-country-vn"
+ *                       name: "Việt Nam"
+ *                       code: "VN"
+ *                       country_mcc: "452"
+ *                       position: 1
+ *                       is_active: true
+ *                       created_at: "2024-03-17T00:00:00.000Z"
+ *                       updated_at: "2024-03-17T00:00:00.000Z"
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.get(
     "/countries",
@@ -228,6 +322,32 @@ router.get(
  *     responses:
  *       200:
  *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy danh sách khu vực thành công"
+ *                 data:
+ *                   page: 1
+ *                   size: 10
+ *                   totalCount: 5
+ *                   totalPage: 1
+ *                   result:
+ *                     - guid: "uuid-area-asia"
+ *                       name: "Châu Á"
+ *                       code: "ASIA"
+ *                       country_mcc: null
+ *                       position: 1
+ *                       is_active: true
+ *                       created_at: "2024-03-17T00:00:00.000Z"
+ *                       updated_at: "2024-03-17T00:00:00.000Z"
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
  */
 router.get("/areas", validateRequest(getAreasSchema, ["query"]), siteCategoryController.getAreas);
 
