@@ -17,6 +17,7 @@ import { mapPaginatedData } from "../core/basePagination.core";
 import { SiteProductPaginationDto, SiteProductOptionPriceDto, SiteProductVariantWithPriceDto } from "../dto/siteProduct.dto";
 import { plainToInstance } from "class-transformer";
 import { Decimal } from 'decimal.js';
+import { NotFoundError } from "../utils/errors/NotFoundError.error";
 
 class SiteProductService extends BaseService {
     /**
@@ -154,7 +155,7 @@ class SiteProductService extends BaseService {
         return await this.handleWithTryCatch(async () => {
             const discount = await discountRepository.findByGuid(discount_guid);
             if (!discount) {
-                throw new AppError({ message: "Mã giảm giá không tồn tại hoặc đã bị xóa", code: ErrorCode.NOT_FOUND });
+                throw new NotFoundError("Mã giảm giá không tồn tại hoặc đã bị xóa");
             }
 
             const rawData = await siteProductOptionPriceRepository.findVariantsByDiscount(discount.id);
@@ -166,13 +167,33 @@ class SiteProductService extends BaseService {
             // Calculate final prices for options
             const transformedData = rawData.map(variant => {
                 const optionsWithPrices = variant.options.map((opt: any) => {
-                    const originalPrice = opt.retail_price;
-                    const finalPrice = new Decimal(originalPrice || 0).mul(rate.toString()).toString();
+                    // Bước 1: Lấy giá gốc (đang lưu là loại tiền tệ nhập ở CMS - ví dụ CNY) nhân với tỷ giá hiện tại ra VND
+                    let originalPriceDec = new Decimal(opt.retail_price || 0).mul(rate);
+                    // Biến finalPriceDec lưu giá cuối cùng sẽ trả về (khởi tạo bằng giá đã quy đổi)
+                    let finalPriceDec = originalPriceDec;
 
+                    // Bước 2: Kiểm tra loại mã giảm giá và tính toán số tiền được giảm
+                    if (discount.type === 'PERCENTAGE') {
+                        // Nếu là giảm theo phần trăm:
+                        // Lấy giá trị % chia 100 (ví dụ 50.00% -> 0.5)
+                        const discountPercent = new Decimal(discount.value).div(100);
+                        // Lấy giá đã quy đổi nhân với (1 - 0.5) = 0.5 (tức là còn 50% giá trị)
+                        finalPriceDec = finalPriceDec.mul(new Decimal(1).minus(discountPercent));
+                    } else if (discount.type === 'FIXED') {
+                        // Nếu là giảm một số tiền cố định:
+                        // Trừ thẳng số tiền đó vào giá đã quy đổi
+                        finalPriceDec = finalPriceDec.minus(discount.value);
+                        // Nếu sau khi giảm mà giá bị âm (ví dụ: giá 10k giảm 20k), thì set giá trị cuối cùng về 0
+                        if (finalPriceDec.isNegative()) {
+                            finalPriceDec = new Decimal(0);
+                        }
+                    }
+
+                    // Trả về dữ liệu gốc của option cộng thêm 2 trường giá mới
                     return {
                         ...opt,
-                        original_price: originalPrice,
-                        final_price: finalPrice
+                        original_price: originalPriceDec, // Giá sau khi quy đổi tỷ giá, chưa áp mã giảm giá
+                        final_price: finalPriceDec        // Giá sau khi quy đổi tỷ giá VÀ ĐÃ được áp mã giảm giá
                     };
                 });
 

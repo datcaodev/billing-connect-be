@@ -59,7 +59,6 @@ class SiteProductOptionPriceRepository extends BaseRespository {
                 copies: item.op_copies,
                 retail_price: item.op_retail_price,
                 currency: item.op_currency,
-                price_id: item.op_id
             });
         }
 
