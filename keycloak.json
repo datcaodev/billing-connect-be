@@ -1,0 +1,15 @@
+{
+  "realm": "ads-realm",
+  "auth-server-url": "http://localhost:8080/",
+  "ssl-required": "external",
+  "resource": "dsp-client",
+  "bearer-only":true,
+  "verify-token-audience": false,
+  "credentials": {
+    "secret": "rLjcLOIKDzKjLY1U8SgQY4tr8dqXOTXj"
+  },
+  "confidential-port": 0,
+  "policy-enforcer": {
+    "credentials": {}
+  }
+}

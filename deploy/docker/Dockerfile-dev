@@ -1,0 +1,37 @@
+# Bước 1: Sử dụng Node.js image để xây dựng ứng dụng Node.js
+FROM node:18.18-alpine
+
+# Tạo thư mục cho ứng dụng
+RUN mkdir -p /home/node/app
+
+# Đặt thư mục làm việc
+WORKDIR /home/node/app
+
+# Copy package.json và package-lock.json vào container
+COPY package*.json /home/node/app/
+COPY pnpm-*.yaml /home/node/app/
+
+# Cài đặt pnpm nếu chưa có
+# RUN npm install -g pnpm
+
+# Cài đặt các package cần thiết
+RUN npm install
+
+# Copy tất cả các file của ứng dụng vào container
+COPY . .
+
+# Bước 2: Cài đặt Nginx
+RUN apk add --no-cache nginx
+
+# Copy cấu hình Nginx vào trong container
+COPY /deploy/.nginx/nginx-dev.conf /etc/nginx/nginx.conf
+
+# Copy các file của ứng dụng Node.js đã build vào thư mục của Nginx
+COPY . /usr/share/nginx/html
+
+# Expose các cổng cần thiết
+EXPOSE 80
+EXPOSE 3000
+
+# Chạy cả ứng dụng Node.js và Nginx
+CMD ["sh", "-c", "npm run dev & nginx -g 'daemon off;'"]

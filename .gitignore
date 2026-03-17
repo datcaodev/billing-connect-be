@@ -1,0 +1,7 @@
+/node_modules
+.qodo
+.env
+.env.development
+.env.production
+/key/private.key
+/key/public.key
