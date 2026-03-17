@@ -136,21 +136,29 @@ export function decodeBase64(base64Str) {
 
 
 export function renderPlanName(high_flow_size: string, plan_type: string) {
+  const size = Number(high_flow_size);
+
   // Không giới hạn
-  if (Number(high_flow_size) === -1 || Number(high_flow_size) === 0 || Number(high_flow_size) === null) {
-    return "Unlimited";
+  if (size === -1) {
+    return "UNLIMITED";
   }
 
-  // Convert KB -> GB
-  const gb = Number(high_flow_size) / (1024 * 1024);
+  const mb = size / 1024;
 
-  // Làm tròn cho đẹp (ví dụ 19.999 -> 20)
-  const displayGb = Number.isInteger(gb) ? gb : gb.toFixed(1);
+  let value: number;
+  let unit: string;
 
-  // plan_type: 0 = cố định, 1 = theo ngày
-  if (Number(plan_type) === 1) {
-    return `${displayGb}GB/ngày`;
+  if (mb < 1024) {
+    // Làm tròn xuống hàng trăm MB
+    value = Math.floor(mb / 100) * 100;
+    unit = "MB";
+  } else {
+    const gb = mb / 1024;
+    value = Math.round(gb * 10) / 10;
+    unit = "GB";
   }
 
-  return `${displayGb}GB`;
+  return Number(plan_type) === 1
+    ? `${value}${unit}/ngày`
+    : `${value}${unit}`;
 }
