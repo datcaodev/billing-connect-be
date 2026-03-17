@@ -58,7 +58,7 @@ export const generateRandomPassword = () => {
 }
 
 // convert kiểu dữ liệu phân trang đầu vào
-export const getPagination = (params: {page : string, size : string, sortBy: string}) : IPaginationMapping  => {
+export const getPagination = (params: { page: string, size: string, sortBy: string }): IPaginationMapping => {
   try {
     const { page, size, sortBy } = params
     const parsePage = +page + 1 || APP_CONFIG.pageDefault;
@@ -132,4 +132,25 @@ export function encodeBase64(obj) {
 export function decodeBase64(base64Str) {
   const jsonString = Buffer.from(base64Str, 'base64').toString('utf-8');
   return JSON.parse(jsonString)
+}
+
+
+export function renderPlanName(high_flow_size: string, plan_type: string) {
+  // Không giới hạn
+  if (Number(high_flow_size) === -1) {
+    return "Unlimited";
+  }
+
+  // Convert KB -> GB
+  const gb = Number(high_flow_size) / (1024 * 1024);
+
+  // Làm tròn cho đẹp (ví dụ 19.999 -> 20)
+  const displayGb = Number.isInteger(gb) ? gb : gb.toFixed(1);
+
+  // plan_type: 0 = cố định, 1 = theo ngày
+  if (Number(plan_type) === 1) {
+    return `${displayGb}GB/ngày`;
+  }
+
+  return `${displayGb}GB`;
 }

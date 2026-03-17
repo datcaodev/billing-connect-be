@@ -13,6 +13,9 @@ export class SiteProductVariant extends BaseTimeEntity {
     plan_type: string;
 
     @Column({ nullable: true })
+    name_original: string;
+
+    @Column({ nullable: true })
     name: string;
 
     @Column({ nullable: true })

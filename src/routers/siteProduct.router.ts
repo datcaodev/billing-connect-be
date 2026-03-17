@@ -61,6 +61,12 @@ const siteProductRouter: Router = (() => {
      *                     product_sku:
      *                       type: string
      *                       example: "JP-10GB-7DAYS"
+     *                     high_flow_size:
+     *                       type: string
+     *                       example: "10485760"
+     *                     plan_type:
+     *                       type: string
+     *                       example: "1"
      *                     name:
      *                       type: string
      *                       example: "Gói 10GB - 7 Ngày"

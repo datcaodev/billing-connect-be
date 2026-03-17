@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AppError } from "../utils/errors/AppError.error";
 import { ErrorCode } from "../enums/error.enum";
 import { ConflictError } from "../utils/errors/ConflictError.error";
-import { getPagination } from "../utils";
+import { getPagination, renderPlanName } from "../utils";
 import { mapPaginatedData } from "../core/basePagination.core";
 import { SiteProductPaginationDto, SiteProductOptionPriceDto, SiteProductVariantWithPriceDto } from "../dto/siteProduct.dto";
 import { plainToInstance } from "class-transformer";
@@ -64,7 +64,8 @@ class SiteProductService extends BaseService {
                     product_sku: variantData.product_sku,
                     name: variantData.name,
                     status: 'active',
-                    is_delete: false
+                    is_delete: false,
+                    name_original: renderPlanName(variantData.high_flow_size, variantData.plan_type)
                 }, queryRunner);
 
                 // Lưu bảng giá chi tiết cho từng số ngày/dung lượng của gói
@@ -167,7 +168,7 @@ class SiteProductService extends BaseService {
                 const optionsWithPrices = variant.options.map((opt: any) => {
                     const originalPrice = opt.retail_price;
                     const finalPrice = new Decimal(originalPrice || 0).mul(rate.toString()).toString();
-                    
+
                     return {
                         ...opt,
                         original_price: originalPrice,

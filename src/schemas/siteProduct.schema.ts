@@ -14,6 +14,8 @@ export const siteProductSchema = z.object({
         product_sku: z.string({
             required_error: "Thiếu tham số bắt buộc: 'product_sku'",
         }),
+        high_flow_size: z.string(),
+        plan_type: z.string(),
         name: z.string({
             required_error: "Thiếu tham số bắt buộc: 'name' cho biến thể",
         }),
