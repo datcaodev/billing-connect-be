@@ -62,10 +62,10 @@ class SiteProductService extends BaseService {
                 await siteProductVariantRepository.upsertVariant({
                     site_product_id: product.id,
                     product_sku: variantData.product_sku,
-                    name: variantData.name,
+                    name: renderPlanName(variantData.high_flow_size, variantData.plan_type) || variantData.name,
                     status: 'active',
                     is_delete: false,
-                    name_original: renderPlanName(variantData.high_flow_size, variantData.plan_type)
+                    name_original: variantData.name
                 }, queryRunner);
 
                 // Lưu bảng giá chi tiết cho từng số ngày/dung lượng của gói

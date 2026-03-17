@@ -137,7 +137,7 @@ export function decodeBase64(base64Str) {
 
 export function renderPlanName(high_flow_size: string, plan_type: string) {
   // Không giới hạn
-  if (Number(high_flow_size) === -1) {
+  if (Number(high_flow_size) === -1 || Number(high_flow_size) === 0 || Number(high_flow_size) === null) {
     return "Unlimited";
   }
 
