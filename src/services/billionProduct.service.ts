@@ -3,9 +3,10 @@ import { getPagination } from "../utils";
 import { mapPaginatedData } from "../core/basePagination.core";
 import { BillionProductDetailDto, BillionProductPaginationDto } from "../dto/billionProduct.dto";
 import { plainToInstance } from "class-transformer";
+import { ISearchBillionProduct } from "../schemas";
 
 class BillionProductService {
-    public async searchProducts(data: any) {
+    public async searchProducts(data: ISearchBillionProduct) {
         const { page, size, sortBy } = data;
         const pagination = getPagination({ page, size, sortBy });
         const result = await billionProductRepository.searchProducts(data, pagination);

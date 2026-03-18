@@ -4,10 +4,11 @@ import { BaseController } from "../core/baseController.core";
 import { AuthenticatedRequest } from "../types";
 import { billionProductService } from "../services/billionProduct.service";
 import { ErrorCode } from "../enums";
+import { ISearchBillionProduct } from "../schemas";
 
 class BillionProductController extends BaseController {
     public searchProducts = async (
-        req: AuthenticatedRequest<object, object, object, any>,
+        req: AuthenticatedRequest<object, object, object, ISearchBillionProduct>,
         res: Response,
         next: NextFunction
     ) => {

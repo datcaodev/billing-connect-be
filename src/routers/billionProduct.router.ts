@@ -28,9 +28,15 @@ const router = express.Router();
  *         schema:
  *           type: integer
  *       - in: query
- *         name: keyword
+ *         name: skuId
  *         schema:
  *           type: string
+ *         description: Tìm kiếm theo mã SKU
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo tên sản phẩm
  *     responses:
  *       200:
  *         description: Thành công
