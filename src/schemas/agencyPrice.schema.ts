@@ -33,8 +33,17 @@ export const agencyPriceSchema = z.object({
 
 export type IAgencyPriceRequest = z.infer<typeof agencyPriceSchema>;
 
+import { basePaginationRequestSchema } from "./pagination.schema";
+
 export const agencyGuidParamSchema = z.object({
     agencyGuid: z.string({
         required_error: "Thiếu tham số bắt buộc: 'agencyGuid'",
     }).uuid("guid đại lý không hợp lệ"),
 });
+
+export const getAgencyPackagesQuerySchema = basePaginationRequestSchema.extend({
+    productSku: z.string().optional(),
+    name: z.string().optional(),
+});
+
+export type IGetAgencyPackagesQuery = z.infer<typeof getAgencyPackagesQuerySchema>;

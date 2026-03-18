@@ -1,7 +1,7 @@
 import express from "express";
 import { validateRequest } from "../middlewares/validateRequest.middleware";
 import { createAgencySchema, updateAgencySchema, searchAgencySchema, agencyPriceSchema } from "../schemas";
-import { agencyGuidParamSchema } from "../schemas/agencyPrice.schema";
+import { agencyGuidParamSchema, getAgencyPackagesQuerySchema } from "../schemas/agencyPrice.schema";
 import { agencyController, agencyPriceController } from "../controllers";
 
 const router = express.Router();
@@ -185,11 +185,11 @@ router.post("/delete/:guid", agencyController.deleteAgency);
  *         schema:
  *           type: integer
  *       - in: query
- *         name: keyword
+ *         name: code
  *         schema:
  *           type: string
  *       - in: query
- *         name: status
+ *         name: name
  *         schema:
  *           type: string
  *     responses:
@@ -225,39 +225,39 @@ router.post("/delete/:guid", agencyController.deleteAgency);
  */
 router.get("/search", validateRequest(searchAgencySchema, ["query"]), agencyController.searchAgency);
 
-    /**
-     * @swagger
-     * /api/v1/billion-connect/agency/all:
-     *   get:
-     *     summary: Lấy danh sách tất cả đại lý (không phân trang)
-     *     tags: [Agency]
-     *     responses:
-     *       200:
-     *         description: Thành công
-     *         content:
-     *           application/json:
-     *             schema:
-     *               type: object
-     *               example:
-     *                 success: true
-     *                 message: "Lấy danh sách tất cả đại lý thành công"
-     *                 data:
-     *                   - guid: "uuid-agency"
-     *                     code: "AG001"
-     *                     name: "Đại lý Cầu Giấy"
-     *                     email: "caugiay@agency.com"
-     *                     phone: "0987654321"
-     *                     address: "123 Cầu Giấy, Hà Nội"
-     *                     website: "https://agency-caugiay.com"
-     *                     createdAt: "2024-03-17T00:00:00.000Z"
-     *                     updatedAt: "2024-03-17T00:00:00.000Z"
-     *                 error_code: null
-     *                 code: 200
-     *                 description: "Message is init response"
-     *                 responseCode: 200
-     *                 timestamp: 1710660000000
-     */
-    router.get("/all", agencyController.getAllAgencies);
+/**
+ * @swagger
+ * /api/v1/billion-connect/agency/all:
+ *   get:
+ *     summary: Lấy danh sách tất cả đại lý (không phân trang)
+ *     tags: [Agency]
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy danh sách tất cả đại lý thành công"
+ *                 data:
+ *                   - guid: "uuid-agency"
+ *                     code: "AG001"
+ *                     name: "Đại lý Cầu Giấy"
+ *                     email: "caugiay@agency.com"
+ *                     phone: "0987654321"
+ *                     address: "123 Cầu Giấy, Hà Nội"
+ *                     website: "https://agency-caugiay.com"
+ *                     createdAt: "2024-03-17T00:00:00.000Z"
+ *                     updatedAt: "2024-03-17T00:00:00.000Z"
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
+ */
+router.get("/all", agencyController.getAllAgencies);
 
 /**
  * @swagger
@@ -318,6 +318,32 @@ router.post("/price-table", validateRequest(agencyPriceSchema, ["body"]), agency
  *         required: true
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Trang hiện tại (mặc định 0)
+ *       - in: query
+ *         name: size
+ *         schema:
+ *           type: string
+ *         description: Số lượng phần tử mỗi trang (mặc định 20)
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *         description: Sắp xếp theo thời gian tạo (mặc định DESC)
+ *       - in: query
+ *         name: productSku
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo mã gói
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo tên gói
  *     responses:
  *       200:
  *         description: Thành công
@@ -329,16 +355,30 @@ router.post("/price-table", validateRequest(agencyPriceSchema, ["body"]), agency
  *                 success: true
  *                 message: "Lấy danh sách gói của đại lý thành công"
  *                 data:
- *                   - siteProductGuid: "uuid-product-1"
- *                     packageName: "Gói 10GB 7 Ngày"
- *                     originalPrice: 150000
- *                     agencyPrice: 120000
+ *                   content:
+ *                     - skuId: "uuid-product-1"
+ *                       name: "Gói 10GB 7 Ngày"
+ *                       type: "esim"
+ *                       highFlowSize: "10"
+ *                       planType: "daily"
+ *                       prices:
+ *                         - productSku: "uuid-product-1"
+ *                           copies: "1"
+ *                           retailPrice: "150000"
+ *                           settlementPrice: "130000"
+ *                           finalPrice: "120000"
+ *                   currentPage: 0
+ *                   pageSize: 20
+ *                   total: 1
+ *                   pagesCount: 1
+ *                   hasNext: false
+ *                   hasPrevious: false
  *                 error_code: null
  *                 code: 200
  *                 description: "Message is init response"
  *                 responseCode: 200
  *                 timestamp: 1710660000000
  */
-router.get("/packages/:agencyGuid", validateRequest(agencyGuidParamSchema, ["params"]), agencyPriceController.getAgencyPackages);
+router.get("/packages/:agencyGuid", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesQuerySchema, ["query"]), agencyPriceController.getAgencyPackages);
 
 export default router;

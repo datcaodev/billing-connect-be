@@ -13,7 +13,7 @@ class AgencyPriceController extends BaseController {
         return this.handleWithTryCatch(
             async () => {
                 const { agencyGuid } = req.params as any;
-                const data = await agencyPriceService.getAgencyPackages(agencyGuid);
+                const data = await agencyPriceService.getAgencyPackages(agencyGuid, req.query);
                 return ServiceResponse.success({
                     message: "Lấy bảng giá đại lý thành công",
                     data

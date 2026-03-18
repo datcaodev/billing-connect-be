@@ -1,6 +1,7 @@
 import { AppDataSource } from "../config/database.config";
 import { BizBundleByAgency } from "../entity/bizBundleByAgency.entity";
 import { BaseRespository } from "../core/baseRepositories.core";
+import { FindOptionsOrderValue } from "typeorm";
 
 class BundleByAgencyRepository extends BaseRespository {
     public async findByAgentAndSku(agentId: number, productSku: string) {
@@ -25,12 +26,29 @@ class BundleByAgencyRepository extends BaseRespository {
         }
     }
 
-    public async findActiveBundlesByAgentId(agentId: number) {
-        return await AppDataSource.getRepository(BizBundleByAgency)
+    public async findActiveBundlesByAgentId(agentId: number, filters: { productSku?: string, name?: string } = {}, pagination?: { skip: number, take: number, orderBy: FindOptionsOrderValue }) {
+        const { productSku, name } = filters;
+        const qb = AppDataSource.getRepository(BizBundleByAgency)
             .createQueryBuilder("bundle")
             .where("bundle.agent_id = :agentId", { agentId })
-            .andWhere("bundle.is_active = true")
-            .getMany();
+            .andWhere("bundle.is_active = true");
+
+        if (productSku) {
+            qb.andWhere("bundle.product_sku ILIKE :productSku", { productSku: `%${productSku}%` });
+        }
+
+        if (name) {
+            qb.andWhere("bundle.name ILIKE :name", { name: `%${name}%` });
+        }
+
+        if (pagination) {
+            const { skip, take, orderBy } = pagination;
+            qb.orderBy("bundle.created_at", orderBy as "ASC" | "DESC")
+                .skip(skip)
+                .take(take);
+        }
+
+        return await qb.getManyAndCount();
     }
 }
 
