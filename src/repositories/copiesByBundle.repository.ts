@@ -52,6 +52,20 @@ class CopiesByBundleRepository extends BaseRespository {
             .andWhere("copy.is_active = true")
             .getMany();
     }
+
+    public async findByGuidWithAgency(guid: string) {
+        return await AppDataSource.getRepository(BizCopiesByBundle)
+            .createQueryBuilder("copy")
+            .innerJoinAndSelect("copy.bundle", "bundle")
+            .innerJoinAndSelect("bundle.agency", "agency")
+            .where("copy.guid = :guid", { guid })
+            .getOne();
+    }
+
+    public async updateFinalPriceByGuid(guid: string, price: number) {
+        return await AppDataSource.getRepository(BizCopiesByBundle)
+            .update({ guid }, { final_price: price, formula_snapsot: null });
+    }
 }
 
 export const copiesByBundleRepository = new CopiesByBundleRepository();

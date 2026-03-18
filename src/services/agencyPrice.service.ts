@@ -1,6 +1,6 @@
 import { BaseService } from "../core/baseService.core";
 import { agencyRepository, bundleByAgencyRepository, copiesByBundleRepository } from "../repositories";
-import { IAgencyPriceRequest, IGetAgencyPackagesQuery } from "../schemas/agencyPrice.schema";
+import { IAgencyPriceRequest, IGetAgencyPackagesQuery, IGetAgencyPackagesFilterQuery, IUpdateAgencyPackagePrice } from "../schemas/agencyPrice.schema";
 import { PriceAdjustType } from "../enums/formula.enum";
 import Decimal from "decimal.js";
 import { NotFoundError } from "../utils/errors/NotFoundError.error";
@@ -129,6 +129,7 @@ class AgencyPriceService extends BaseService {
 
         for (const bundle of bundles) {
             const pkg = {
+                guid: bundle.guid,
                 skuId: bundle.product_sku,
                 type: bundle.type,
                 name: bundle.name,
@@ -141,6 +142,7 @@ class AgencyPriceService extends BaseService {
             for (const copy of bundleCopies) {
                 const originalSnapshot = copy.formula_snapsot || {};
                 pkg.prices.push({
+                    guid: copy.guid,
                     productSku: pkg.skuId,
                     copies: copy.copies.toString(),
                     retailPrice: originalSnapshot.original_retail_price || copy.base_price.toString(),
@@ -158,6 +160,101 @@ class AgencyPriceService extends BaseService {
             take: pagination.take,
             total
         });
+    }
+
+    public async getAgencyPackagesFilter(agencyGuid: string, query: IGetAgencyPackagesFilterQuery) {
+        // 1. Tìm đại lý
+        const agency = await agencyRepository.findByGuid(agencyGuid);
+        if (!agency) {
+            throw new NotFoundError("Không tìm thấy đại lý");
+        }
+
+        const { page, size, sortBy, productSku, name, regionGuid, countryGuid } = query;
+        const pagination = getPagination({ page, size, sortBy });
+
+        // 2. Lấy danh sách bundle của đại lý với filter và pagination
+        const [bundles, total] = await bundleByAgencyRepository.findActiveBundlesFiltered(
+            agency.id,
+            { productSku, name, regionGuid, countryGuid },
+            pagination
+        );
+
+        if (!bundles.length) {
+            return mapPaginatedData({
+                dtoClass: AgencyPackageDto,
+                entities: [],
+                skip: pagination.skip,
+                take: pagination.take,
+                total
+            });
+        }
+
+        const bundleIds = bundles.map(b => b.id);
+
+        // 3. Lấy thông tin copies/prices của các bundle đó
+        const copies = await copiesByBundleRepository.findActiveCopiesByBundleIds(bundleIds);
+
+        // 4. Map dữ liệu trả về
+        const packagesList: any[] = [];
+
+        for (const bundle of bundles) {
+            const pkg = {
+                guid: bundle.guid,
+                skuId: bundle.product_sku,
+                type: bundle.type,
+                name: bundle.name,
+                highFlowSize: bundle.high_flow_size,
+                planType: bundle.plan_type,
+                prices: [] as any[]
+            };
+
+            const bundleCopies = copies.filter(c => c.bundle_id === bundle.id);
+            for (const copy of bundleCopies) {
+                const originalSnapshot = copy.formula_snapsot || {};
+                pkg.prices.push({
+                    guid: copy.guid,
+                    productSku: pkg.skuId,
+                    copies: copy.copies.toString(),
+                    retailPrice: originalSnapshot.original_retail_price || copy.base_price.toString(),
+                    settlementPrice: originalSnapshot.original_settlement_price || copy.base_price.toString(),
+                    finalPrice: copy.final_price.toString()
+                });
+            }
+            packagesList.push(pkg);
+        }
+
+        return mapPaginatedData({
+            dtoClass: AgencyPackageDto,
+            entities: packagesList,
+            skip: pagination.skip,
+            take: pagination.take,
+            total
+        });
+    }
+
+    public async updatePackagePrice(data: IUpdateAgencyPackagePrice) {
+        const { agencyGuid, copiesGuid, price } = data;
+
+        // 1. Tìm đại lý
+        const agency = await agencyRepository.findByGuid(agencyGuid);
+        if (!agency) {
+            throw new NotFoundError("Không tìm thấy đại lý");
+        }
+
+        // 2. Tìm copy và kiểm tra quyền sở hữu
+        const copy = await copiesByBundleRepository.findByGuidWithAgency(copiesGuid);
+        if (!copy) {
+            throw new NotFoundError("Không tìm thấy cấu hình giá");
+        }
+
+        if (copy.bundle.agency.guid !== agencyGuid) {
+            throw new Error("Không có quyền cập nhật cấu hình giá này");
+        }
+
+        // 3. Cập nhật giá
+        await copiesByBundleRepository.updateFinalPriceByGuid(copiesGuid, price);
+
+        return true;
     }
 }
 

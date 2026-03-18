@@ -1,7 +1,7 @@
 import express from "express";
 import { validateRequest } from "../middlewares/validateRequest.middleware";
 import { createAgencySchema, updateAgencySchema, searchAgencySchema, agencyPriceSchema } from "../schemas";
-import { agencyGuidParamSchema, getAgencyPackagesQuerySchema } from "../schemas/agencyPrice.schema";
+import { agencyGuidParamSchema, getAgencyPackagesQuerySchema, getAgencyPackagesFilterQuerySchema, updateAgencyPackagePriceSchema } from "../schemas/agencyPrice.schema";
 import { agencyController, agencyPriceController } from "../controllers";
 
 const router = express.Router();
@@ -356,13 +356,15 @@ router.post("/price-table", validateRequest(agencyPriceSchema, ["body"]), agency
  *                 message: "Lấy danh sách gói của đại lý thành công"
  *                 data:
  *                   content:
- *                     - skuId: "uuid-product-1"
+ *                     - guid: "uuid-bundle-1"
+ *                       skuId: "uuid-product-1"
  *                       name: "Gói 10GB 7 Ngày"
  *                       type: "esim"
  *                       highFlowSize: "10"
  *                       planType: "daily"
  *                       prices:
- *                         - productSku: "uuid-product-1"
+ *                         - guid: "uuid-price-1"
+ *                           productSku: "uuid-product-1"
  *                           copies: "1"
  *                           retailPrice: "150000"
  *                           settlementPrice: "130000"
@@ -380,5 +382,81 @@ router.post("/price-table", validateRequest(agencyPriceSchema, ["body"]), agency
  *                 timestamp: 1710660000000
  */
 router.get("/packages/:agencyGuid", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesQuerySchema, ["query"]), agencyPriceController.getAgencyPackages);
+
+/**
+ * @swagger
+ * /api/v1/billion-connect/agency/packages/{agencyGuid}/filter:
+ *   get:
+ *     summary: Lấy danh sách gói của đại lý (có filter theo Vùng/Quốc gia)
+ *     tags: [Agency]
+ *     parameters:
+ *       - in: path
+ *         name: agencyGuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: size
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *       - in: query
+ *         name: productSku
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: regionGuid
+ *         schema:
+ *           type: string
+ *         description: GUID của Vùng (Category)
+ *       - in: query
+ *         name: countryGuid
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Danh sách GUID của Quốc gia (Category)
+ *     responses:
+ *       200:
+ *         description: Thành công
+ */
+router.get("/packages/:agencyGuid/filter", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesFilterQuerySchema, ["query"]), agencyPriceController.getAgencyPackagesFilter);
+
+/**
+ * @swagger
+ * /api/v1/billion-connect/agency/packages/price:
+ *   patch:
+ *     summary: Cập nhật giá copies theo đại lý
+ *     tags: [Agency]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               agencyGuid:
+ *                 type: string
+ *               copiesGuid:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Thành công
+ */
+router.patch("/packages/price", validateRequest(updateAgencyPackagePriceSchema, ["body"]), agencyPriceController.updatePackagePrice);
 
 export default router;

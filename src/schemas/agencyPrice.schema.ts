@@ -46,4 +46,25 @@ export const getAgencyPackagesQuerySchema = basePaginationRequestSchema.extend({
     name: z.string().optional(),
 });
 
+export const getAgencyPackagesFilterQuerySchema = basePaginationRequestSchema.extend({
+    productSku: z.string().optional(),
+    name: z.string().optional(),
+    regionGuid: z.string().uuid().optional(),
+    countryGuid: z.preprocess((val) => {
+        if (typeof val === "string") return [val];
+        return val;
+    }, z.array(z.string().uuid())).optional(),
+});
+
 export type IGetAgencyPackagesQuery = z.infer<typeof getAgencyPackagesQuerySchema>;
+export const updateAgencyPackagePriceSchema = z.object({
+    agencyGuid: z.string().uuid("agencyGuid không hợp lệ"),
+    copiesGuid: z.string().uuid("copiesGuid không hợp lệ"),
+    price: z.number({
+        required_error: "Thiếu giá cập nhật",
+        invalid_type_error: "Giá phải là số",
+    }).min(0, "Giá không được nhỏ hơn 0"),
+});
+
+export type IGetAgencyPackagesFilterQuery = z.infer<typeof getAgencyPackagesFilterQuerySchema>;
+export type IUpdateAgencyPackagePrice = z.infer<typeof updateAgencyPackagePriceSchema>;
