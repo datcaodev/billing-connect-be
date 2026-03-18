@@ -28,7 +28,7 @@ class ExchangeRateHistoryRepository extends BaseRespository {
     public searchExchangeRateHistory = (data: ISearchExchangeRateHistoryRequest, pagination: IPaginationMapping) => {
         return this.handleWithTryCatch(async () => {
 
-            const { currency, startDate } = data;
+            const { targetCurrency, startDate } = data;
             const { orderBy, skip, take } = pagination;
 
             const repository = AppDataSource.getRepository(SiteExchangeRateHistory);
@@ -38,8 +38,8 @@ class ExchangeRateHistoryRepository extends BaseRespository {
                 .where("1 = 1");
 
             // filter currency
-            if (currency) {
-                qb.andWhere("exchangeRateHistory.currency = :currency", { currency });
+            if (targetCurrency) {
+                qb.andWhere("exchangeRateHistory.currency = :targetCurrency", { targetCurrency });
             }
 
             // filter startDate

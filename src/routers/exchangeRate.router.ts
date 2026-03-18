@@ -98,11 +98,11 @@ router.post("/create", validateRequest(createExchangeRateSchema, ["body"]), exch
  *         schema:
  *           type: integer
  *       - in: query
- *         name: fromCurrencyCode
+ *         name: startDate
  *         schema:
  *           type: string
  *       - in: query
- *         name: toCurrencyCode
+ *         name: targetCurrency
  *         schema:
  *           type: string
  *     responses:

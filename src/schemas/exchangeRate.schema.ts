@@ -19,9 +19,9 @@ export const createExchangeRateSchema = z.object({
 })
 
 export const searchExchangeRateHistorySchema = z.object({
-    currency: z.string({
-        required_error: "Thiếu tham số bắt buộc: 'currency'",
-        invalid_type_error: "Sai kiểu dữ liệu: 'currency' phải là String",
+    targetCurrency: z.string({
+        required_error: "Thiếu tham số bắt buộc: 'targetCurrency'",
+        invalid_type_error: "Sai kiểu dữ liệu: 'targetCurrency' phải là String",
     }).optional(),
     startDate: z
         .string({
