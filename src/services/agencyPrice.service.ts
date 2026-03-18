@@ -24,11 +24,11 @@ class AgencyPriceService extends BaseService {
                 // 2. Lưu hoặc Cập nhật bảng BizBundleByAgency (liên kết giữa đại lý và bundle)
                 const bundleData = {
                     agent_id: agency.id,
-                    product_sku: pkg.sku_id,
+                    product_sku: pkg.skuId,
                     type: pkg.type,
                     name: pkg.name,
-                    high_flow_size: pkg.high_flow_size,
-                    plan_type: pkg.plan_type,
+                    high_flow_size: pkg.highFlowSize,
+                    plan_type: pkg.planType,
                     is_active: true
                 };
 
@@ -41,10 +41,10 @@ class AgencyPriceService extends BaseService {
                     activeCopies.push(copiesVal);
 
                     // 3. Tính toán giá cuối cùng (final_price)
-                    // Quy tắc: Nếu công thức là RETAIL_PRICE thì lấy retail_price làm gốc, các case khác lấy settlement_price
-                    let basePriceStr = price.settlement_price;
+                    // Quy tắc: Nếu công thức là RETAIL_PRICE thì lấy retailPrice làm gốc, các case khác lấy settlementPrice
+                    let basePriceStr = price.settlementPrice;
                     if (formula === PriceAdjustType.RETAIL_PRICE) {
-                        basePriceStr = price.retail_price;
+                        basePriceStr = price.retailPrice;
                     }
 
                     const basePrice = new Decimal(basePriceStr);
@@ -79,8 +79,8 @@ class AgencyPriceService extends BaseService {
                         formula_snapsot: {
                             formula: formula,
                             amount: amount,
-                            original_retail_price: price.retail_price,
-                            original_settlement_price: price.settlement_price
+                            original_retail_price: price.retailPrice,
+                            original_settlement_price: price.settlementPrice
                         },
                         is_active: true
                     };

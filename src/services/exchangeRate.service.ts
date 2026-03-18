@@ -4,8 +4,8 @@ import { exchangeRateHistoryRepository } from "../repositories/exchangeRateHisto
 import { ICreateExchangeRateRequest, ISearchExchangeRateHistoryRequest } from "../types/exchangeRate.type";
 import Decimal from "decimal.js";
 import { getPagination } from "../utils";
-import { mapPaginatedData } from "../core/basePagination.core";
-import { ExchangeRateHistoryPaginationDto } from "../dto/exchangeRate.dto";
+import { mapData, mapPaginatedData } from "../core/basePagination.core";
+import { ExchangeRateDto, ExchangeRateHistoryPaginationDto } from "../dto/exchangeRate.dto";
 
 class ExchangeRateService extends BaseService {
 
@@ -57,6 +57,16 @@ class ExchangeRateService extends BaseService {
             });
 
             return dataMappingDTO;
+        });
+    };
+
+    public getExchangeRate = () => {
+        return this.handleWithTryCatch(async () => {
+            const data = await exchangeRateRepository.findData();
+            return mapData({
+                dtoClass: ExchangeRateDto,
+                entities: data,
+            });
         });
     };
 }

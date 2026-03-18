@@ -41,11 +41,11 @@ const router = express.Router();
  *               value:
  *                 type: number
  *                 example: 10
- *               start_date:
+ *               startDate:
  *                 type: string
  *                 description: "Định dạng DD/MM/YYYY HH:mm:ss"
  *                 example: "01/06/2024 00:00:00"
- *               end_date:
+ *               endDate:
  *                 type: string
  *                 description: "Định dạng DD/MM/YYYY HH:mm:ss"
  *                 example: "31/08/2024 23:59:59"
@@ -65,8 +65,8 @@ const router = express.Router();
  *                   name: "Giảm giá mùa hè 2024"
  *                   type: "PERCENTAGE"
  *                   value: 10
- *                   start_date: "2024-06-01T00:00:00.000Z"
- *                   end_date: "2024-08-31T23:59:59.000Z"
+ *                   startDate: "2024-06-01T00:00:00.000Z"
+ *                   endDate: "2024-08-31T23:59:59.000Z"
  *                 error_code: null
  *                 code: 201
  *                 description: "Message is init response"
@@ -120,8 +120,8 @@ router.post("/create", validateRequest(createDiscountSchema, ["body"]), discount
  *                       type: "PERCENTAGE"
  *                       value: 10
  *                       status: "ACTIVE"
- *                       start_date: "2024-06-01T00:00:00.000Z"
- *                       end_date: "2024-08-31T23:59:59.000Z"
+ *                       startDate: "2024-06-01T00:00:00.000Z"
+ *                       endDate: "2024-08-31T23:59:59.000Z"
  *                 error_code: null
  *                 code: 200
  *                 description: "Message is init response"

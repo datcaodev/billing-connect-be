@@ -56,6 +56,23 @@ class ExchangeRateController extends BaseController {
             next
         );
     };
+
+    public getExchangeRate = async (
+        req: AuthenticatedRequest<object, object, object, object>,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const result = await exchangeRateService.getExchangeRate();
+                return ServiceResponse.success({
+                    data: result,
+                });
+            },
+            res,
+            next
+        );
+    };
 }
 
 export const exchangeRateController = new ExchangeRateController();

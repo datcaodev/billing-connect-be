@@ -25,14 +25,14 @@ class BillionProductController extends BaseController {
     };
 
     public getDetail = async (
-        req: AuthenticatedRequest<{ sku_id: string }, object, object, any>,
+        req: AuthenticatedRequest<{ skuId: string }, object, object, any>,
         res: Response,
         next: NextFunction
     ) => {
         return this.handleWithTryCatch(
             async () => {
-                const { sku_id } = req.params;
-                const data = await billionProductService.getProductDetail(sku_id);
+                const { skuId } = req.params;
+                const data = await billionProductService.getProductDetail(skuId);
                 if (!data) {
                     return ServiceResponse.failure({
                         headerStatusCode: 404, // map to StatusCodes.NOT_FOUND if needed, but 404 works

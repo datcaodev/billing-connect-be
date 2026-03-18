@@ -139,7 +139,7 @@ router.post(
  *               code:
  *                 type: string
  *                 example: "VN"
- *               area_guid:
+ *               areaGuid:
  *                 type: string
  *                 format: uuid
  *                 example: "uuid-area-asia"
@@ -203,7 +203,7 @@ router.post(
  *               position:
  *                 type: number
  *                 example: 3
- *               area_guid:
+ *               areaGuid:
  *                 type: string
  *                 example: "uuid-khu-vuc-moi"
  *     responses:

@@ -7,15 +7,15 @@ export const siteProductSchema = z.object({
         invalid_type_error: "Sai kiểu dữ liệu: 'name' phải là String",
     }).min(1, "Tên sản phẩm không được để trống"),
     desc: z.string().nullable(),
-    image_url: z.string().nullable().optional(),
-    category_guids: z.array(z.string()).min(1, "Sản phẩm phải thuộc ít nhất một danh mục"),
-    area_guid: z.string().nullable(),
+    imageUrl: z.string().nullable().optional(),
+    categoryGuids: z.array(z.string()).min(1, "Sản phẩm phải thuộc ít nhất một danh mục"),
+    areaGuid: z.string().nullable(),
     variants: z.array(z.object({
-        product_sku: z.string({
-            required_error: "Thiếu tham số bắt buộc: 'product_sku'",
+        productSku: z.string({
+            required_error: "Thiếu tham số bắt buộc: 'productSku'",
         }),
-        high_flow_size: z.string(),
-        plan_type: z.string(),
+        highFlowSize: z.string(),
+        planType: z.string(),
         name: z.string({
             required_error: "Thiếu tham số bắt buộc: 'name' cho biến thể",
         }),
@@ -23,7 +23,7 @@ export const siteProductSchema = z.object({
             copies: z.number({
                 required_error: "Thiếu tham số bắt buộc: 'copies'",
             }),
-            discount_guid: z.string().nullable(),
+            discountGuid: z.string().nullable(),
         })).min(1, "Biến thể phải có ít nhất một giá trị (copies)"),
     })).min(1, "Sản phẩm phải có ít nhất một gói")
 });
@@ -31,23 +31,32 @@ export const siteProductSchema = z.object({
 export type ISiteProductRequest = z.infer<typeof siteProductSchema>;
 
 export const searchSiteProductSchema = basePaginationRequestSchema.extend({
-    sku_id: z.string().optional(),
+    skuId: z.string().optional(),
     name: z.string().optional(),
     status: z.string().optional(),
-    category_code: z.string().optional(),
-    category_name: z.string().optional()
+    categoryCode: z.string().optional(),
+    categoryName: z.string().optional()
 });
 
 export const getOptionPriceSchema = z.object({
-    product_sku: z.string({
-        required_error: "Thiếu tham số 'product_sku'",
-    }).min(1, "product_sku không được để trống"),
+    productSku: z.string({
+        required_error: "Thiếu tham số 'productSku'",
+    }).min(1, "productSku không được để trống"),
 });
 
 export const searchVariantsByDiscountSchema = z.object({
-    discount_guid: z.string({
-        required_error: "Thiếu tham số 'discount_guid'",
+    discountGuid: z.string({
+        required_error: "Thiếu tham số 'discountGuid'",
     }).uuid("GUID không hợp lệ"),
 });
 
 export type ISearchVariantsByDiscountRequest = z.infer<typeof searchVariantsByDiscountSchema>;
+
+export const removeDiscountFromOptionsSchema = z.object({
+    optionPriceGuids: z.array(
+        z.string().uuid("Mỗi phần tử phải là UUID hợp lệ"),
+        { required_error: "Thiếu tham số 'optionPriceGuids'" }
+    ).min(1, "Phải cung cấp ít nhất một optionPriceGuid"),
+});
+
+export type IRemoveDiscountFromOptionsRequest = z.infer<typeof removeDiscountFromOptionsSchema>;

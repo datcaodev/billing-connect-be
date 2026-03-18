@@ -27,8 +27,8 @@ class SiteCategoryService extends BaseService {
                 position: data.position
             };
 
-            if (data.area_guid) {
-                const area = await siteCategoryRepository.findByGuid(data.area_guid);
+            if (data.areaGuid) {
+                const area = await siteCategoryRepository.findByGuid(data.areaGuid);
                 if (!area) {
                     throw new NotFoundError("Khu vực mới không tồn tại");
                 }
@@ -83,10 +83,10 @@ class SiteCategoryService extends BaseService {
 
     public async createCountry(data: ICreateCountryRequest) {
         return await this.handleWithTryCatch(async () => {
-            const { name, code, area_guid, position } = data;
+            const { name, code, areaGuid, position } = data;
 
             // 1. Kiểm tra Area GUID có tồn tại không
-            const area = await siteCategoryRepository.findByGuid(area_guid);
+            const area = await siteCategoryRepository.findByGuid(areaGuid);
             if (!area) {
                 throw new NotFoundError("Khu vực không tồn tại");
             }

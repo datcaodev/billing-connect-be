@@ -21,8 +21,8 @@ class BillionProductService {
         return dataMappingDTO;
     }
 
-    public async getProductDetail(sku_id: string) {
-        const product = await billionProductRepository.getProductBySku(sku_id);
+    public async getProductDetail(skuId: string) {
+        const product = await billionProductRepository.getProductBySku(skuId);
         if (!product) {
             return null;
         }

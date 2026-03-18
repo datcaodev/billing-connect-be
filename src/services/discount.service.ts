@@ -15,7 +15,7 @@ const dateFormat = "DD/MM/YYYY HH:mm:ss";
 class DiscountService extends BaseService {
     public async createDiscount(data: ICreateDiscountRequest) {
         return await this.handleWithTryCatch(async () => {
-            const { name, type, value, start_date, end_date } = data;
+            const { name, type, value, startDate, endDate } = data;
 
             // Kiểm tra tên đã tồn tại chưa
             const existingDiscount = await discountRepository.findByName(name);
@@ -28,8 +28,8 @@ class DiscountService extends BaseService {
                 name,
                 type,
                 value,
-                start_date: dayjs(start_date, dateFormat).toDate(),
-                end_date: dayjs(end_date, dateFormat).toDate(),
+                start_date: dayjs(startDate, dateFormat).toDate(),
+                end_date: dayjs(endDate, dateFormat).toDate(),
                 is_active: true,
                 used_count: 0
             });

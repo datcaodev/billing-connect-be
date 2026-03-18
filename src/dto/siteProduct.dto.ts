@@ -14,6 +14,7 @@ export class CategoryDto {
 
 @Exclude()
 export class SiteProductOptionPriceDto {
+    @Expose() guid: string;
     @Expose({ name: "product_sku" }) productSku: string;
     @Expose() copies: number;
     @Expose({ name: "original_price" }) originalPrice: number;
@@ -51,6 +52,7 @@ export class SiteProductPaginationDto {
 
 @Exclude()
 export class SiteProductOptionPriceSimpleDto {
+    @Expose() guid: string;
     @Expose() copies: number;
     @Expose({ name: "retail_price" }) retailPrice: number;
     @Expose({ name: "final_price" }) finalPrice: number;

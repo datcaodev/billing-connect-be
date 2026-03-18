@@ -24,7 +24,7 @@ export const createCountrySchema = z.object({
         required_error: "Mã quốc gia không được để trống",
         invalid_type_error: "Mã quốc gia phải là chuỗi",
     }).min(1, "Mã quốc gia không được để trống"),
-    area_guid: z.string({
+    areaGuid: z.string({
         required_error: "GUID khu vực (Area) không được để trống",
         invalid_type_error: "GUID khu vực phải là chuỗi",
     }).min(1, "GUID khu vực không được để trống").uuid("GUID khu vực không hợp lệ"),
@@ -51,5 +51,5 @@ export const updateAreaSchema = z.object({
 export const updateCountrySchema = z.object({
     name: z.string().optional(),
     position: z.number().optional(),
-    area_guid: z.string().optional(),
+    areaGuid: z.string().optional(),
 });

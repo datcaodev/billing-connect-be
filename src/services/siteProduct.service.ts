@@ -7,7 +7,7 @@ import { siteCategoryRepository } from "../repositories/siteCategory.repository"
 import { exchangeRateRepository } from "../repositories/exchangeRate.repository";
 import { copiesByBundleRepository } from "../repositories/copiesByBundle.repository";
 import { discountRepository } from "../repositories/discount.repository";
-import { ISiteProductRequest, ISearchVariantsByDiscountRequest } from "../schemas/siteProduct.schema";
+import { ISiteProductRequest, ISearchVariantsByDiscountRequest, IRemoveDiscountFromOptionsRequest } from "../schemas/siteProduct.schema";
 import { v4 as uuidv4 } from 'uuid';
 import { AppError } from "../utils/errors/AppError.error";
 import { ErrorCode } from "../enums/error.enum";
@@ -26,11 +26,11 @@ class SiteProductService extends BaseService {
      */
     public async createSiteProduct(data: ISiteProductRequest) {
         return await this.handleWithTransaction(async (queryRunner) => {
-            const { name, desc, image_url, category_guids, variants } = data;
+            const { name, desc, imageUrl, categoryGuids, variants } = data;
 
             // 1. Kiểm tra sự tồn tại của các danh mục
-            const categories = await siteCategoryRepository.findByGuids(category_guids);
-            if (categories.length !== category_guids.length) {
+            const categories = await siteCategoryRepository.findByGuids(categoryGuids);
+            if (categories.length !== categoryGuids.length) {
                 throw new ConflictError("Một hoặc nhiều danh mục không tồn tại");
             }
 
@@ -42,7 +42,7 @@ class SiteProductService extends BaseService {
                 guid: uuidv4(),
                 name,
                 desc,
-                image_url, // Sau này sẽ xử lý upload file và lưu link cloud ở đây
+                image_url: imageUrl, // Mapping camelCase to snake_case entity field
                 type: 'esim', // Mặc định là esim
                 status: 'active', // Trạng thái mặc định là active
                 is_delete: false,
@@ -59,11 +59,11 @@ class SiteProductService extends BaseService {
 
             // 5. Xử lý lưu các gói (Variants) và bảng giá chi tiết
             for (const variantData of variants) {
-                // Lưu thông tin biến thể (liên kết site_product_id với product_sku của nhà cung cấp)
+                // Lưu thông tin biến thể (liên kết site_product_id với productSku của nhà cung cấp)
                 await siteProductVariantRepository.upsertVariant({
                     site_product_id: product.id,
-                    product_sku: variantData.product_sku,
-                    name: renderPlanName(variantData.high_flow_size, variantData.plan_type) || variantData.name,
+                    product_sku: variantData.productSku,
+                    name: renderPlanName(variantData.highFlowSize, variantData.planType) || variantData.name,
                     status: 'active',
                     is_delete: false,
                     name_original: variantData.name
@@ -72,24 +72,24 @@ class SiteProductService extends BaseService {
                 // Lưu bảng giá chi tiết cho từng số ngày/dung lượng của gói
                 for (const optionData of variantData.options) {
                     // Lấy giá bán lẻ từ cấu hình gói (biz_copies_by_bundle)
-                    const bundleCopy = await copiesByBundleRepository.getPriceBySkuAndCopies(variantData.product_sku, optionData.copies);
+                    const bundleCopy = await copiesByBundleRepository.getPriceBySkuAndCopies(variantData.productSku, optionData.copies);
 
                     if (!bundleCopy) {
-                        throw new ConflictError(`Không tìm thấy cấu hình giá cho SKU: ${variantData.product_sku} với ${optionData.copies} copies`);
+                        throw new ConflictError(`Không tìm thấy cấu hình giá cho SKU: ${variantData.productSku} với ${optionData.copies} copies`);
                     }
 
-                    // Kiểm tra và lấy discount_id từ discount_guid nếu có
+                    // Kiểm tra và lấy discount_id từ discountGuid nếu có
                     let discountId: number | undefined = undefined;
-                    if (optionData.discount_guid) {
-                        const discount = await discountRepository.findByGuid(optionData.discount_guid);
+                    if (optionData.discountGuid) {
+                        const discount = await discountRepository.findByGuid(optionData.discountGuid);
                         if (!discount) {
-                            throw new ConflictError(`Không tìm thấy mã giảm giá với GUID: ${optionData.discount_guid}`);
+                            throw new ConflictError(`Không tìm thấy mã giảm giá với GUID: ${optionData.discountGuid}`);
                         }
                         discountId = discount.id;
                     }
 
                     await siteProductOptionPriceRepository.upsertOptionPrice({
-                        product_sku: variantData.product_sku,
+                        product_sku: variantData.productSku,
                         copies: optionData.copies,
                         retail_price: bundleCopy.final_price,
                         discount_id: discountId,
@@ -149,11 +149,11 @@ class SiteProductService extends BaseService {
     }
 
     /**
-     * Lấy danh sách option prices theo discount_guid (nhóm theo variant)
+     * Lấy danh sách option prices theo discountGuid (nhóm theo variant)
      */
-    public async getVariantsByDiscount(discount_guid: string) {
+    public async getVariantsByDiscount(discountGuid: string) {
         return await this.handleWithTryCatch(async () => {
-            const discount = await discountRepository.findByGuid(discount_guid);
+            const discount = await discountRepository.findByGuid(discountGuid);
             if (!discount) {
                 throw new NotFoundError("Mã giảm giá không tồn tại hoặc đã bị xóa");
             }
@@ -204,6 +204,18 @@ class SiteProductService extends BaseService {
             });
 
             return transformedData;
+        });
+    }
+
+    /**
+     * Bỏ giảm giá ra khỏi các copies được chỉ định
+     * @param optionPriceGuids Danh sách GUID của các option prices cần gỡ bỏ giảm giá
+     */
+    public async removeDiscountFromOptions(optionPriceGuids: string[]) {
+        return await this.handleWithTryCatch(async () => {
+            // Xóa discount_id khỏi các option prices được chỉ định theo GUID
+            await siteProductOptionPriceRepository.removeDiscountFromSpecificGuids(optionPriceGuids);
+            return true;
         });
     }
 

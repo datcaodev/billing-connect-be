@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { validateRequest, validateRequestWithForm } from "../middlewares/validateRequest.middleware";
-import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema } from "../schemas/siteProduct.schema";
+import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema, removeDiscountFromOptionsSchema } from "../schemas/siteProduct.schema";
 import { siteProductController } from "../controllers/siteProduct.controller";
 import multer from "multer";
 
@@ -30,7 +30,7 @@ const siteProductRouter: Router = (() => {
      *             type: object
      *             required:
      *               - name
-     *               - category_guids
+     *               - categoryGuids
      *               - variants
      *             properties:
      *               name:
@@ -42,15 +42,15 @@ const siteProductRouter: Router = (() => {
      *               image:
      *                 type: string
      *                 format: binary
-     *               image_url:
+     *               imageUrl:
      *                 type: string
      *                 example: "https://example.com/image.jpg"
-     *               category_guids:
+     *               categoryGuids:
      *                 type: array
      *                 items:
      *                   type: string
      *                 example: ["uuid-category-sim", "uuid-category-japan"]
-     *               area_guid:
+     *               areaGuid:
      *                 type: string
      *                 example: "uuid-area-asia"
      *               variants:
@@ -58,13 +58,13 @@ const siteProductRouter: Router = (() => {
      *                 items:
      *                   type: object
      *                   properties:
-     *                     product_sku:
+     *                     productSku:
      *                       type: string
      *                       example: "JP-10GB-7DAYS"
-     *                     high_flow_size:
+     *                     highFlowSize:
      *                       type: string
      *                       example: "10485760"
-     *                     plan_type:
+     *                     planType:
      *                       type: string
      *                       example: "1"
      *                     name:
@@ -78,7 +78,7 @@ const siteProductRouter: Router = (() => {
      *                           copies:
      *                             type: number
      *                             example: 1
-     *                           discount_guid:
+     *                           discountGuid:
      *                             type: string
      *                             example: "uuid-discount-summer"
      *     responses:
@@ -125,7 +125,7 @@ const siteProductRouter: Router = (() => {
      *           default: 10
      *         description: Số lượng cần lấy
      *       - in: query
-     *         name: sku_id
+     *         name: skuId
      *         schema:
      *           type: string
      *         description: SKU ID
@@ -140,12 +140,12 @@ const siteProductRouter: Router = (() => {
      *           type: string
      *         description: Trạng thái
      *       - in: query
-     *         name: category_code
+     *         name: categoryCode
      *         schema:
      *           type: string
      *         description: Mã danh mục
      *       - in: query
-     *         name: category_name
+     *         name: categoryName
      *         schema:
      *           type: string
      *         description: Tên danh mục
@@ -169,12 +169,12 @@ const siteProductRouter: Router = (() => {
      *                       name: "Sim Du Lịch Nhật Bản"
      *                       type: "esim"
      *                       status: "active"
-     *                       image_url: "https://example.com/image.jpg"
+     *                       imageUrl: "https://example.com/image.jpg"
      *                       slug: "sim-du-lich-nhat-ban"
      *                       created_at: "2024-03-17T00:00:00.000Z"
      *                       updated_at: "2024-03-17T00:00:00.000Z"
      *                       variants:
-     *                         - product_sku: "JP-10GB-7DAYS"
+     *                         - productSku: "JP-10GB-7DAYS"
      *                           plan_type: "daily"
      *                           name: "Gói 10GB - 7 Ngày"
      *                           status: "active"
@@ -198,13 +198,13 @@ const siteProductRouter: Router = (() => {
 
     /**
      * @swagger
-     * /api/v1/billion-connect/site-product/option-prices/{product_sku}:
+     * /api/v1/billion-connect/site-product/option-prices/{productSku}:
      *   get:
      *     summary: Lấy giá của các option theo SKU
      *     tags: [SiteProduct]
      *     parameters:
      *       - in: path
-     *         name: product_sku
+     *         name: productSku
      *         required: true
      *         schema:
      *           type: string
@@ -220,7 +220,7 @@ const siteProductRouter: Router = (() => {
      *                 success: true
      *                 message: "Lấy danh sách mức giá thành công"
      *                 data:
-     *                   - product_sku: "JP-10GB-7DAYS"
+     *                   - productSku: "JP-10GB-7DAYS"
      *                     copies: 1
      *                     original_price: 250000
      *                     final_price: 200000
@@ -232,20 +232,20 @@ const siteProductRouter: Router = (() => {
      *                 timestamp: 1710660000000
      */
     router.get(
-        "/option-prices/:product_sku",
+        "/option-prices/:productSku",
         validateRequest(getOptionPriceSchema, ["params"]),
         siteProductController.getOptionPricesBySku
     );
 
     /**
      * @swagger
-     * /api/v1/billion-connect/site-product/variants-by-discount/{discount_guid}:
+     * /api/v1/billion-connect/site-product/variants-by-discount/{discountGuid}:
      *   get:
      *     summary: Lấy danh sách option được gán giảm giá
      *     tags: [SiteProduct]
      *     parameters:
      *       - in: path
-     *         name: discount_guid
+     *         name: discountGuid
      *         required: true
      *         schema:
      *           type: string
@@ -261,7 +261,7 @@ const siteProductRouter: Router = (() => {
      *                 success: true
      *                 message: "Lấy danh sách option theo mã giảm giá thành công"
      *                 data:
-     *                   - product_sku: "JP-10GB-7DAYS"
+     *                   - productSku: "JP-10GB-7DAYS"
      *                     name: "Gói 10GB - 7 Ngày"
      *                     options:
      *                       - copies: 1
@@ -277,9 +277,54 @@ const siteProductRouter: Router = (() => {
      *                 timestamp: 1710660000000
      */
     router.get(
-        "/variants-by-discount/:discount_guid",
+        "/variants-by-discount/:discountGuid",
         validateRequest(searchVariantsByDiscountSchema, ["params"]),
         siteProductController.getVariantsByDiscount
+    );
+
+    /**
+     * @swagger
+     * /api/v1/billion-connect/site-product/remove-discount:
+     *   patch:
+     *     summary: Bỏ giảm giá ra khỏi các copies được chỉ định
+     *     tags: [SiteProduct]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - optionPriceGuids
+     *             properties:
+     *               optionPriceGuids:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *                   format: uuid
+     *                 description: Danh sách GUID của các option prices cần gỡ bỏ giảm giá
+     *                 example: ["xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"]
+     *     responses:
+     *       200:
+     *         description: Thành công
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               example:
+     *                 success: true
+     *                 message: "Bỏ giảm giá khỏi các copies thành công"
+     *                 data: true
+     *                 error_code: null
+     *                 code: 200
+     *                 description: "Message is init response"
+     *                 responseCode: 200
+     *                 timestamp: 1710660000000
+     */
+    router.patch(
+        "/remove-discount",
+        validateRequest(removeDiscountFromOptionsSchema, ["body"]),
+        siteProductController.removeDiscountFromOptions
     );
 
     return router;

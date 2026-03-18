@@ -36,6 +36,14 @@ class SiteProductOptionPriceRepository extends BaseRespository {
         const qb = this.repository.createQueryBuilder("op")
             .leftJoinAndSelect("site_product_variant", "spv", "spv.product_sku = op.product_sku")
             .where("op.discount_id = :discountId", { discountId })
+            .select([
+                "op.guid AS op_guid",
+                "op.product_sku AS op_product_sku",
+                "op.copies AS op_copies",
+                "op.retail_price AS op_retail_price",
+                "op.currency AS op_currency",
+                "spv.name AS spv_name"
+            ])
             .andWhere("spv.is_delete = false")
             .orderBy("op.product_sku", "ASC")
             .addOrderBy("op.copies", "ASC");
@@ -56,6 +64,7 @@ class SiteProductOptionPriceRepository extends BaseRespository {
             }
 
             variantMap.get(sku).options.push({
+                guid: item.op_guid,
                 copies: item.op_copies,
                 retail_price: item.op_retail_price,
                 currency: item.op_currency,
@@ -63,6 +72,18 @@ class SiteProductOptionPriceRepository extends BaseRespository {
         }
 
         return Array.from(variantMap.values());
+    }
+
+    /**
+     * Bỏ giảm giá ra khỏi các copies (option prices) được chỉ định theo danh sách GUID
+     */
+    public async removeDiscountFromSpecificGuids(optionPriceGuids: string[]): Promise<void> {
+        await this.repository
+            .createQueryBuilder()
+            .update(SiteProductOptionPrice)
+            .set({ discount_id: null as any })
+            .where("guid IN (:...optionPriceGuids)", { optionPriceGuids })
+            .execute();
     }
 }
 

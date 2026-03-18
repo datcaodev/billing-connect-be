@@ -8,3 +8,9 @@ export class ExchangeRateHistoryPaginationDto {
     @Expose({ name: "end_date" }) endDate: Date;
     @Expose({ name: "id" }) id: number;
 }
+
+@Exclude()
+export class ExchangeRateDto {
+    @Expose({ name: "currency" }) currency: string;
+    @Expose({ name: "rate" }) rate: string;
+}

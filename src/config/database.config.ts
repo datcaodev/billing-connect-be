@@ -18,7 +18,7 @@ export class DatabaseORMSingleton {
         username: env.DB_USER,
         password: env.DB_PASSWORD,
         database: env.DB_NAME,
-        synchronize: false, // Chỉ bật synchronize khi môi trường là development
+        synchronize: true, // Chỉ bật synchronize khi môi trường là development
         logging: true, // log query
         extra: {
           options: "-c timezone=Asia/Ho_Chi_Minh"

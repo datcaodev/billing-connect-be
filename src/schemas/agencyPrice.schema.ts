@@ -17,16 +17,16 @@ export const agencyPriceSchema = z.object({
         invalid_type_error: "Sai kiểu dữ liệu: 'remark' phải là String",
     }).optional(),
     packages: z.array(z.object({
-        sku_id: z.string(),
+        skuId: z.string(),
         type: z.string(),
         name: z.string(),
-        high_flow_size: z.string(),
-        plan_type: z.string(),
+        highFlowSize: z.string(),
+        planType: z.string(),
         prices: z.array(z.object({
-            product_sku: z.string(),
+            productSku: z.string(),
             copies: z.string(),
-            retail_price: z.string(),
-            settlement_price: z.string(),
+            retailPrice: z.string(),
+            settlementPrice: z.string(),
         })),
     })).min(1, "Danh sách gói không được để trống"),
 });
@@ -34,7 +34,7 @@ export const agencyPriceSchema = z.object({
 export type IAgencyPriceRequest = z.infer<typeof agencyPriceSchema>;
 
 export const agencyGuidParamSchema = z.object({
-    agency_guid: z.string({
-        required_error: "Thiếu tham số bắt buộc: 'agency_guid'",
+    agencyGuid: z.string({
+        required_error: "Thiếu tham số bắt buộc: 'agencyGuid'",
     }).uuid("guid đại lý không hợp lệ"),
 });

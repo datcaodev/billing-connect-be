@@ -23,4 +23,7 @@ export class SiteProductVariant extends BaseTimeEntity {
 
     @Column({ nullable: true })
     is_delete: boolean;
+
+    @Column({ type: "uuid", unique: true, nullable: true, default: () => "gen_random_uuid()" })
+    guid: string;
 }

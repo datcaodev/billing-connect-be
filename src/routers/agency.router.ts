@@ -238,20 +238,20 @@ router.get("/search", validateRequest(searchAgencySchema, ["query"]), agencyCont
  *           schema:
  *             type: object
  *             properties:
- *               agency_guid:
+ *               agencyGuid:
  *                 type: string
  *               packages:
  *                 type: array
  *                 items:
  *                   type: object
  *                   properties:
- *                     site_product_guid:
+ *                     siteProductGuid:
  *                       type: string
- *                     package_name:
+ *                     packageName:
  *                       type: string
- *                     original_price:
+ *                     originalPrice:
  *                       type: number
- *                     agency_price:
+ *                     agencyPrice:
  *                       type: number
  *     responses:
  *       200:
@@ -274,13 +274,13 @@ router.post("/price-table", validateRequest(agencyPriceSchema, ["body"]), agency
 
 /**
  * @swagger
- * /api/v1/billion-connect/agency/packages/{agency_guid}:
+ * /api/v1/billion-connect/agency/packages/{agencyGuid}:
  *   get:
  *     summary: Lấy danh sách gói của đại lý
  *     tags: [Agency]
  *     parameters:
  *       - in: path
- *         name: agency_guid
+ *         name: agencyGuid
  *         required: true
  *         schema:
  *           type: string
@@ -295,16 +295,16 @@ router.post("/price-table", validateRequest(agencyPriceSchema, ["body"]), agency
  *                 success: true
  *                 message: "Lấy danh sách gói của đại lý thành công"
  *                 data:
- *                   - site_product_guid: "uuid-product-1"
- *                     package_name: "Gói 10GB 7 Ngày"
- *                     original_price: 150000
- *                     agency_price: 120000
+ *                   - siteProductGuid: "uuid-product-1"
+ *                     packageName: "Gói 10GB 7 Ngày"
+ *                     originalPrice: 150000
+ *                     agencyPrice: 120000
  *                 error_code: null
  *                 code: 200
  *                 description: "Message is init response"
  *                 responseCode: 200
  *                 timestamp: 1710660000000
  */
-router.get("/packages/:agency_guid", validateRequest(agencyGuidParamSchema, ["params"]), agencyPriceController.getAgencyPackages);
+router.get("/packages/:agencyGuid", validateRequest(agencyGuidParamSchema, ["params"]), agencyPriceController.getAgencyPackages);
 
 export default router;

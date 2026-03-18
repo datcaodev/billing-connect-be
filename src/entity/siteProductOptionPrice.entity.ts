@@ -6,6 +6,9 @@ export class SiteProductOptionPrice extends BaseTimeEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column({ type: "uuid", unique: true, nullable: true, default: () => "gen_random_uuid()" })
+    guid: string;
+
     @Column({ nullable: true })
     product_sku: string;
 

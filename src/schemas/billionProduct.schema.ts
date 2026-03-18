@@ -5,8 +5,8 @@ export const searchBillionProductSchema = z.object({
     keyword: z.string({
         invalid_type_error: "Sai kiểu dữ liệu: 'keyword' phải là String",
     }).optional(),
-    sku_id: z.string({
-        invalid_type_error: "Sai kiểu dữ liệu: 'sku_id' phải là String",
+    skuId: z.string({
+        invalid_type_error: "Sai kiểu dữ liệu: 'skuId' phải là String",
     }).optional(),
     name: z.string({
         invalid_type_error: "Sai kiểu dữ liệu: 'name' phải là String",
@@ -17,8 +17,8 @@ export const searchBillionProductSchema = z.object({
 }).merge(basePaginationRequestSchema);
 
 export const getBillionProductDetailSchema = z.object({
-    sku_id: z.string({
-        required_error: "Thiếu 'sku_id'",
-        invalid_type_error: "'sku_id' phải là String",
+    skuId: z.string({
+        required_error: "Thiếu 'skuId'",
+        invalid_type_error: "'skuId' phải là String",
     }),
 });

@@ -38,8 +38,8 @@ class SiteProductController extends BaseController {
     ) => {
         return this.handleWithTryCatch(
             async () => {
-                const { product_sku } = req.params;
-                const data = await siteProductService.getOptionPricesBySku(product_sku);
+                const { productSku } = req.params;
+                const data = await siteProductService.getOptionPricesBySku(productSku);
                 return ServiceResponse.success({
                     message: "Lấy danh sách mức giá thành công",
                     data
@@ -60,8 +60,8 @@ class SiteProductController extends BaseController {
     ) => {
         return this.handleWithTryCatch(
             async () => {
-                const { discount_guid } = req.params;
-                const data = await siteProductService.getVariantsByDiscount(discount_guid);
+                const { discountGuid } = req.params;
+                const data = await siteProductService.getVariantsByDiscount(discountGuid);
                 return ServiceResponse.success({
                     message: "Lấy danh sách option theo mã giảm giá thành công",
                     data
@@ -83,26 +83,26 @@ class SiteProductController extends BaseController {
             if (typeof data.variants === 'string') {
                 data.variants = JSON.parse(data.variants);
             }
-            if (typeof data.category_guids === 'string') {
-                data.category_guids = JSON.parse(data.category_guids);
+            if (typeof data.categoryGuids === 'string') {
+                data.categoryGuids = JSON.parse(data.categoryGuids);
             }
 
-            // Gộp area_guid vào mảng category_guids nếu có truyền lên
-            if (data.area_guid) {
-                if (!Array.isArray(data.category_guids)) {
-                    data.category_guids = [];
+            // Gộp areaGuid vào mảng categoryGuids nếu có truyền lên
+            if (data.areaGuid) {
+                if (!Array.isArray(data.categoryGuids)) {
+                    data.categoryGuids = [];
                 }
-                if (!data.category_guids.includes(data.area_guid)) {
-                    data.category_guids.push(data.area_guid);
+                if (!data.categoryGuids.includes(data.areaGuid)) {
+                    data.categoryGuids.push(data.areaGuid);
                 }
-                // Xóa area_guid ra khỏi data nếu như trong db không có trường này, do nó đã được gộp vào danh mục
-                delete data.area_guid;
+                // Xóa areaGuid ra khỏi data nếu như trong db không có trường này, do nó đã được gộp vào danh mục
+                delete data.areaGuid;
             }
 
             // Xử lý upload ảnh lên Cloudinary nếu có file đính kèm
             if (req.file) {
                 const imageUrl = await uploadToCloudinary(req.file);
-                data.image_url = imageUrl;
+                data.imageUrl = imageUrl;
             }
 
             const result = await siteProductService.createSiteProduct(data);
@@ -111,6 +111,28 @@ class SiteProductController extends BaseController {
                 data: result
             });
         }, res, next);
+    };
+
+    /**
+     * HTTP handler bỏ giảm giá ra khỏi các copies được chỉ định
+     */
+    public removeDiscountFromOptions = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const { optionPriceGuids } = req.body;
+                await siteProductService.removeDiscountFromOptions(optionPriceGuids);
+                return ServiceResponse.success({
+                    message: "Bỏ giảm giá khỏi các copies thành công",
+                    data: true
+                });
+            },
+            res,
+            next
+        );
     };
 }
 

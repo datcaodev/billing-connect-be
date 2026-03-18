@@ -98,11 +98,11 @@ router.post("/create", validateRequest(createExchangeRateSchema, ["body"]), exch
  *         schema:
  *           type: integer
  *       - in: query
- *         name: from_currency_code
+ *         name: fromCurrencyCode
  *         schema:
  *           type: string
  *       - in: query
- *         name: to_currency_code
+ *         name: toCurrencyCode
  *         schema:
  *           type: string
  *     responses:
@@ -124,8 +124,8 @@ router.post("/create", validateRequest(createExchangeRateSchema, ["body"]), exch
  *                     - id: 1
  *                       currency: "VND"
  *                       rate: "25450"
- *                       start_date: "2024-03-17T00:00:00.000Z"
- *                       end_date: "2024-03-18T00:00:00.000Z"
+ *                       startDate: "2024-03-17T00:00:00.000Z"
+ *                       endDate: "2024-03-18T00:00:00.000Z"
  *                 error_code: null
  *                 code: 200
  *                 description: "Message is init response"
@@ -133,5 +133,32 @@ router.post("/create", validateRequest(createExchangeRateSchema, ["body"]), exch
  *                 timestamp: 1710660000000
  */
 router.get("/histories", validateRequest(searchExchangeRateHistorySchema, ["query"]), exchangeRateController.searchExchangeRateHistory);
+
+/**
+ * @swagger
+ * /api/v1/billion-connect/exchange-rate:
+ *   get:
+ *     summary: Lấy thông tin cấu hình tỉ giá
+ *     tags: [ExchangeRate]
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Thành công"
+ *                 data:
+ *                   currency: "VND"
+ *                   rate: "25450"
+ *                 error_code: null
+ *                 code: 200
+ *                 description: "Message is init response"
+ *                 responseCode: 200
+ *                 timestamp: 1710660000000
+ */
+router.get("/", exchangeRateController.getExchangeRate);
 
 export default router;

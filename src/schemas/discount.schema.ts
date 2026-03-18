@@ -22,23 +22,23 @@ export const createDiscountSchema = z.object({
         required_error: "Thiếu tham số bắt buộc: 'value'",
         invalid_type_error: "Sai kiểu dữ liệu: 'value' phải là Number",
     }).positive("Giá trị giảm giá phải lớn hơn 0"),
-    start_date: z.string({
-        required_error: "Thiếu tham số bắt buộc: 'start_date'",
+    startDate: z.string({
+        required_error: "Thiếu tham số bắt buộc: 'startDate'",
     }).refine((date) => dayjs(date, dateFormat, true).isValid(), {
-        message: `start_date không đúng định dạng ${dateFormat}`,
+        message: `startDate không đúng định dạng ${dateFormat}`,
     }),
-    end_date: z.string({
-        required_error: "Thiếu tham số bắt buộc: 'end_date'",
+    endDate: z.string({
+        required_error: "Thiếu tham số bắt buộc: 'endDate'",
     }).refine((date) => dayjs(date, dateFormat, true).isValid(), {
-        message: `end_date không đúng định dạng ${dateFormat}`,
+        message: `endDate không đúng định dạng ${dateFormat}`,
     }),
 }).refine((data) => {
-    const start = dayjs(data.start_date, dateFormat);
-    const end = dayjs(data.end_date, dateFormat);
+    const start = dayjs(data.startDate, dateFormat);
+    const end = dayjs(data.endDate, dateFormat);
     return start.isBefore(end) || start.isSame(end);
 }, {
     message: "Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc",
-    path: ["end_date"],
+    path: ["endDate"],
 });
 
 export type ICreateDiscountRequest = z.infer<typeof createDiscountSchema>;
