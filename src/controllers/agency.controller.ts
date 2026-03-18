@@ -78,6 +78,24 @@ class AgencyController extends BaseController {
             next
         );
     };
+
+    public getAllAgencies = async (
+        req: AuthenticatedRequest<object, object, object, object>,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const data = await agencyService.getAllAgencies();
+                return ServiceResponse.success({
+                    message: "Lấy danh sách tất cả đại lý thành công",
+                    data
+                });
+            },
+            res,
+            next
+        );
+    };
 }
 
 export const agencyController = new AgencyController();

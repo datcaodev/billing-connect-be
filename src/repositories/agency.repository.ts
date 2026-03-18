@@ -71,6 +71,13 @@ class AgencyRepository {
         const [result, total] = await qb.getManyAndCount();
         return { result, total };
     }
+
+    public async findAllAgencies(): Promise<BizAgency[]> {
+        return await this.repository.find({
+            where: { is_deleted: false },
+            order: { name: "ASC" }
+        });
+    }
 }
 
 export const agencyRepository = new AgencyRepository();

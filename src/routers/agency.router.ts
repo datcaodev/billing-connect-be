@@ -225,6 +225,40 @@ router.post("/delete/:guid", agencyController.deleteAgency);
  */
 router.get("/search", validateRequest(searchAgencySchema, ["query"]), agencyController.searchAgency);
 
+    /**
+     * @swagger
+     * /api/v1/billion-connect/agency/all:
+     *   get:
+     *     summary: Lấy danh sách tất cả đại lý (không phân trang)
+     *     tags: [Agency]
+     *     responses:
+     *       200:
+     *         description: Thành công
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               example:
+     *                 success: true
+     *                 message: "Lấy danh sách tất cả đại lý thành công"
+     *                 data:
+     *                   - guid: "uuid-agency"
+     *                     code: "AG001"
+     *                     name: "Đại lý Cầu Giấy"
+     *                     email: "caugiay@agency.com"
+     *                     phone: "0987654321"
+     *                     address: "123 Cầu Giấy, Hà Nội"
+     *                     website: "https://agency-caugiay.com"
+     *                     createdAt: "2024-03-17T00:00:00.000Z"
+     *                     updatedAt: "2024-03-17T00:00:00.000Z"
+     *                 error_code: null
+     *                 code: 200
+     *                 description: "Message is init response"
+     *                 responseCode: 200
+     *                 timestamp: 1710660000000
+     */
+    router.get("/all", agencyController.getAllAgencies);
+
 /**
  * @swagger
  * /api/v1/billion-connect/agency/price-table:

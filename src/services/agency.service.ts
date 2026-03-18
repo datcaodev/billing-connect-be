@@ -4,6 +4,7 @@ import { ConflictError } from "../utils/errors/ConflictError.error";
 import { getPagination } from "../utils";
 import { mapPaginatedData } from "../core/basePagination.core";
 import { AgencyPaginationDto } from "../dto/agency.dto";
+import { plainToInstance } from "class-transformer";
 
 class AgencyService {
     public async createAgency(data: Partial<BizAgency>) {
@@ -68,6 +69,11 @@ class AgencyService {
         });
 
         return dataMappingDTO;
+    }
+
+    public async getAllAgencies() {
+        const agencies = await agencyRepository.findAllAgencies();
+        return plainToInstance(AgencyPaginationDto, agencies);
     }
 }
 
