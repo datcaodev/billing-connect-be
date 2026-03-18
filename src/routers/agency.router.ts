@@ -271,22 +271,65 @@ router.get("/all", agencyController.getAllAgencies);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - agencyGuid
+ *               - formula
+ *               - packages
  *             properties:
  *               agencyGuid:
+ *                 type: string
+ *                 format: uuid
+ *               formula:
+ *                 type: string
+ *                 enum: [INCREASE_PERCENT, DECREASE_PERCENT, INCREASE_FIXED, DECREASE_FIXED, RETAIL_PRICE]
+ *               amount:
+ *                 type: number
+ *               remark:
  *                 type: string
  *               packages:
  *                 type: array
  *                 items:
  *                   type: object
  *                   properties:
- *                     siteProductGuid:
+ *                     skuId:
  *                       type: string
- *                     packageName:
+ *                     type:
  *                       type: string
- *                     originalPrice:
- *                       type: number
- *                     agencyPrice:
- *                       type: number
+ *                     name:
+ *                       type: string
+ *                     highFlowSize:
+ *                       type: string
+ *                     planType:
+ *                       type: string
+ *                     prices:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           productSku:
+ *                             type: string
+ *                           copies:
+ *                             type: string
+ *                           retailPrice:
+ *                             type: string
+ *                           settlementPrice:
+ *                             type: string
+ *           example:
+ *             agencyGuid: "uuid-agency"
+ *             formula: "INCREASE_PERCENT"
+ *             amount: 10
+ *             remark: "Tăng 10% giá"
+ *             packages:
+ *               - skuId: "uuid-product-1"
+ *                 type: "esim"
+ *                 name: "Gói 10GB 7 Ngày"
+ *                 highFlowSize: "10"
+ *                 planType: "daily"
+ *                 prices:
+ *                   - productSku: "uuid-product-1"
+ *                     copies: "1"
+ *                     retailPrice: "150000"
+ *                     settlementPrice: "130000"
  *     responses:
  *       200:
  *         description: Thành công
