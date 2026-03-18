@@ -67,8 +67,8 @@ const router = express.Router();
  *                   phone: "0987654321"
  *                   address: "123 Cầu Giấy, Hà Nội"
  *                   website: "https://agency-caugiay.com"
- *                   created_at: "2024-03-17T00:00:00.000Z"
- *                   updated_at: "2024-03-17T00:00:00.000Z"
+ *                   createdAt: "2024-03-17T00:00:00.000Z"
+ *                   updatedAt: "2024-03-17T00:00:00.000Z"
  *                 error_code: null
  *                 code: 201
  *                 description: "Message is init response"
@@ -215,8 +215,8 @@ router.post("/delete/:guid", agencyController.deleteAgency);
  *                       phone: "0987654321"
  *                       address: "123 Cầu Giấy, Hà Nội"
  *                       website: "https://agency-caugiay.com"
- *                       created_at: "2024-03-17T00:00:00.000Z"
- *                       updated_at: "2024-03-17T00:00:00.000Z"
+ *                       createdAt: "2024-03-17T00:00:00.000Z"
+ *                       updatedAt: "2024-03-17T00:00:00.000Z"
  *                 error_code: null
  *                 code: 200
  *                 description: "Message is init response"

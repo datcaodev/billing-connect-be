@@ -171,18 +171,18 @@ const siteProductRouter: Router = (() => {
      *                       status: "active"
      *                       imageUrl: "https://example.com/image.jpg"
      *                       slug: "sim-du-lich-nhat-ban"
-     *                       created_at: "2024-03-17T00:00:00.000Z"
-     *                       updated_at: "2024-03-17T00:00:00.000Z"
+     *                       createdAt: "2024-03-17T00:00:00.000Z"
+     *                       updatedAt: "2024-03-17T00:00:00.000Z"
      *                       variants:
      *                         - productSku: "JP-10GB-7DAYS"
-     *                           plan_type: "daily"
+     *                           planType: "daily"
      *                           name: "Gói 10GB - 7 Ngày"
      *                           status: "active"
      *                       categories:
      *                         - guid: "uuid-category-1"
      *                           code: "JP"
      *                           name: "Nhật Bản"
-     *                           country_mcc: "440"
+     *                           countryMcc: "440"
      *                           parent: null
      *                 error_code: null
      *                 code: 200
@@ -222,8 +222,8 @@ const siteProductRouter: Router = (() => {
      *                 data:
      *                   - productSku: "JP-10GB-7DAYS"
      *                     copies: 1
-     *                     original_price: 250000
-     *                     final_price: 200000
+     *                     originalPrice: 250000
+     *                     finalPrice: 200000
      *                     currency: "CNY"
      *                 error_code: null
      *                 code: 200
@@ -265,10 +265,10 @@ const siteProductRouter: Router = (() => {
      *                     name: "Gói 10GB - 7 Ngày"
      *                     options:
      *                       - copies: 1
-     *                         price_id: 10
-     *                         retail_price: 250000
-     *                         original_price: 250000
-     *                         final_price: 200000
+     *                         priceId: 10
+     *                         retailPrice: 250000
+     *                         originalPrice: 250000
+     *                         finalPrice: 200000
      *                         currency: "CNY"
      *                 error_code: null
      *                 code: 200

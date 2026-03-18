@@ -25,13 +25,13 @@ export class ServiceResponse<T = null> {
     this.description = 'Message is init response'
     this.responseCode = responseCode;
     this.timestamp = timestamp;
-    
+
   }
 
   static success<T>(params: IServiceResponseParams<T>) {
-    const { 
-      data = null, 
-      message = TEXT_CONSTANT.SUCCESS, 
+    const {
+      data = null,
+      message = TEXT_CONSTANT.SUCCESS,
       code = SuccessCode.CODE_SUCCESS_200,
       error_code = null,
       headerStatusCode = StatusCodes.OK
@@ -41,9 +41,9 @@ export class ServiceResponse<T = null> {
   }
 
   static successAndNotify<T>(params: IServiceResponseParams<T>) {
-    const { 
-      data = null, 
-      message = TEXT_CONSTANT.SUCCESS, 
+    const {
+      data = null,
+      message = TEXT_CONSTANT.SUCCESS,
       code = SuccessCode.CODE_SUCCESS_NOTIFY_201,
       error_code = null,
       headerStatusCode = StatusCodes.OK
@@ -53,10 +53,10 @@ export class ServiceResponse<T = null> {
   }
 
   static warningAndNotify<T>(params: IServiceResponseParams<T>) {
-    const { 
-      data = null, 
-      message = TEXT_CONSTANT.SUCCESS, 
-      code = SuccessCode.CODE_WARNING_NOTIFY, 
+    const {
+      data = null,
+      message = TEXT_CONSTANT.SUCCESS,
+      code = SuccessCode.CODE_WARNING_NOTIFY,
       error_code = null,
       headerStatusCode = StatusCodes.OK
     } = params
@@ -66,10 +66,10 @@ export class ServiceResponse<T = null> {
 
 
   static failure<T>(params: IServiceResponseParams<T>) {
-    const { 
-      data = null, 
-      message = TEXT_CONSTANT.NOT_SUCCESS, 
-      code = ErrorCode.ACTION_FAILED, 
+    const {
+      data = null,
+      message = TEXT_CONSTANT.NOT_SUCCESS,
+      code = ErrorCode.ACTION_FAILED,
       error_code = null,
       headerStatusCode = StatusCodes.OK
     } = params

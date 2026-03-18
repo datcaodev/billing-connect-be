@@ -139,8 +139,8 @@ class SiteProductService extends BaseService {
 
                 return {
                     ...price,
-                    original_price: originalPrice,
-                    final_price: finalPrice
+                    originalPrice,
+                    finalPrice
                 };
             });
 
@@ -192,8 +192,8 @@ class SiteProductService extends BaseService {
                     // Trả về dữ liệu gốc của option cộng thêm 2 trường giá mới
                     return {
                         ...opt,
-                        original_price: originalPriceDec, // Giá sau khi quy đổi tỷ giá, chưa áp mã giảm giá
-                        final_price: finalPriceDec        // Giá sau khi quy đổi tỷ giá VÀ ĐÃ được áp mã giảm giá
+                        originalPrice: originalPriceDec, // Giá sau khi quy đổi tỷ giá, chưa áp mã giảm giá
+                        finalPrice: finalPriceDec        // Giá sau khi quy đổi tỷ giá VÀ ĐÃ được áp mã giảm giá
                     };
                 });
 

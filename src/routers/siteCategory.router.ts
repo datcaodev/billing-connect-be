@@ -50,11 +50,11 @@ const router = express.Router();
  *                   guid: "uuid-area-asia"
  *                   name: "Châu Á"
  *                   code: "ASIA"
- *                   country_mcc: null
+ *                   countryMcc: null
  *                   position: 1
- *                   is_active: true
- *                   created_at: "2024-03-17T00:00:00.000Z"
- *                   updated_at: "2024-03-17T00:00:00.000Z"
+ *                   isActive: true
+ *                   createdAt: "2024-03-17T00:00:00.000Z"
+ *                   updatedAt: "2024-03-17T00:00:00.000Z"
  *                 error_code: null
  *                 code: 201
  *                 description: "Message is init response"
@@ -160,11 +160,11 @@ router.post(
  *                   guid: "uuid-country-vn"
  *                   name: "Việt Nam"
  *                   code: "VN"
- *                   country_mcc: "452"
+ *                   countryMcc: "452"
  *                   position: 1
- *                   is_active: true
- *                   created_at: "2024-03-17T00:00:00.000Z"
- *                   updated_at: "2024-03-17T00:00:00.000Z"
+ *                   isActive: true
+ *                   createdAt: "2024-03-17T00:00:00.000Z"
+ *                   updatedAt: "2024-03-17T00:00:00.000Z"
  *                 error_code: null
  *                 code: 201
  *                 description: "Message is init response"
@@ -275,11 +275,11 @@ router.post(
  *                     - guid: "uuid-country-vn"
  *                       name: "Việt Nam"
  *                       code: "VN"
- *                       country_mcc: "452"
+ *                       countryMcc: "452"
  *                       position: 1
- *                       is_active: true
- *                       created_at: "2024-03-17T00:00:00.000Z"
- *                       updated_at: "2024-03-17T00:00:00.000Z"
+ *                       isActive: true
+ *                       createdAt: "2024-03-17T00:00:00.000Z"
+ *                       updatedAt: "2024-03-17T00:00:00.000Z"
  *                 error_code: null
  *                 code: 200
  *                 description: "Message is init response"
@@ -338,11 +338,11 @@ router.get(
  *                     - guid: "uuid-area-asia"
  *                       name: "Châu Á"
  *                       code: "ASIA"
- *                       country_mcc: null
+ *                       countryMcc: null
  *                       position: 1
- *                       is_active: true
- *                       created_at: "2024-03-17T00:00:00.000Z"
- *                       updated_at: "2024-03-17T00:00:00.000Z"
+ *                       isActive: true
+ *                       createdAt: "2024-03-17T00:00:00.000Z"
+ *                       updatedAt: "2024-03-17T00:00:00.000Z"
  *                 error_code: null
  *                 code: 200
  *                 description: "Message is init response"

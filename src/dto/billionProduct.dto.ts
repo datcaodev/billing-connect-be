@@ -3,28 +3,28 @@ import { Exclude, Expose, Type } from "class-transformer";
 @Exclude()
 export class BillionProductPriceDto {
     @Expose() id: number;
-    @Expose() product_sku: string;
+    @Expose({ name: "product_sku" }) productSku: string;
     @Expose() copies: string;
-    @Expose() retail_price: string;
-    @Expose() settlement_price: string;
+    @Expose({ name: "retail_price" }) retailPrice: string;
+    @Expose({ name: "settlement_price" }) settlementPrice: string;
 }
 
 @Exclude()
 export class BillionProductPaginationDto {
     @Expose() id: number;
-    @Expose() sku_id: string;
+    @Expose({ name: "sku_id" }) skuId: string;
     @Expose() type: string;
     @Expose() name: string;
     // @Expose() days: string;
     // @Expose() capacity: string;
-    @Expose() high_flow_size: string;
+    @Expose({ name: "high_flow_size" }) highFlowSize: string;
     // @Expose() limit_flow_speed: string;
     // @Expose() hotspot_support: string;
     // @Expose() product_id: string;
     // @Expose() product_name: string;
     // @Expose() apn: string;
     // @Expose() operator_info: string;
-    @Expose() plan_type: string;
+    @Expose({ name: "plan_type" }) planType: string;
     // @Expose() validity_period: string;
     // @Expose() acceleration_support: string;
     // @Expose() desc: string;
