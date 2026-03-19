@@ -2,13 +2,14 @@ import { BaseService } from "../core/baseService.core";
 import { siteCategoryRepository } from "../repositories/siteCategory.repository";
 import { AppError } from "../utils/errors/AppError.error";
 import { ErrorCode } from "../enums/error.enum";
-import { ICreateAreaRequest, ICreateCountryRequest, IGetCountriesRequest, IGetAreasRequest, IUpdateAreaRequest, IUpdateCountryRequest } from "../types";
+import { ICreateAreaRequest, ICreateCountryRequest, IGetCountriesRequest, IGetAreasRequest, IUpdateAreaRequest, IUpdateCountryRequest, IGetAreasAllRequest, IGetCountriesByAreaRequest } from "../types";
 import { NotFoundError } from "../utils/errors/NotFoundError.error";
 import { ConflictError } from "../utils/errors/ConflictError.error";
 
 import { mapPaginatedData } from "../core/basePagination.core";
 import { getPagination } from "../utils/function.utils";
 import { SiteCategoryDto } from "../dto/siteCategory.dto";
+import { plainToInstance } from "class-transformer";
 
 class SiteCategoryService extends BaseService {
     public async updateCountry(guid: string, data: IUpdateCountryRequest) {
@@ -128,6 +129,14 @@ class SiteCategoryService extends BaseService {
         });
     }
 
+    public async getCountriesByArea(query: IGetCountriesByAreaRequest) {
+        return await this.handleWithTryCatch(async () => {
+            const { areaGuid } = query;
+            const countries = await siteCategoryRepository.getCountriesByArea(areaGuid);
+            return plainToInstance(SiteCategoryDto, countries);
+        });
+    }
+
     public async getAreas(query: IGetAreasRequest) {
         return await this.handleWithTryCatch(async () => {
             const { page, size, name, code } = query;
@@ -144,6 +153,14 @@ class SiteCategoryService extends BaseService {
             });
 
             return dataMappingDTO;
+        });
+    }
+
+    public async getAreasAll(query: IGetAreasAllRequest) {
+        return await this.handleWithTryCatch(async () => {
+            const { name, code } = query;
+            const areas = await siteCategoryRepository.getAreasAll(name, code);
+            return plainToInstance(SiteCategoryDto, areas);
         });
     }
 }

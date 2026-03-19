@@ -38,7 +38,16 @@ export const getCountriesSchema = basePaginationRequestSchema.extend({
     code: z.string().optional(),
 });
 
+export const getCountriesByAreaSchema = z.object({
+    areaGuid: z.string().uuid("GUID khu vực không hợp lệ").optional(),
+});
+
 export const getAreasSchema = basePaginationRequestSchema.extend({
+    name: z.string().optional(),
+    code: z.string().optional(),
+});
+
+export const getAreasAllSchema = z.object({
     name: z.string().optional(),
     code: z.string().optional(),
 });

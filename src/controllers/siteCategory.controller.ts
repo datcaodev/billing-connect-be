@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import { ServiceResponse } from "../core/serviceResponse.core";
 import { BaseController } from "../core/baseController.core";
-import { AuthenticatedRequest, ICreateAreaRequest, ICreateCountryRequest, IGetCountriesRequest, IGetAreasRequest, IUpdateAreaRequest, IUpdateCountryRequest } from "../types";
+import { AuthenticatedRequest, ICreateAreaRequest, ICreateCountryRequest, IGetCountriesRequest, IGetAreasRequest, IUpdateAreaRequest, IUpdateCountryRequest, IGetAreasAllRequest, IGetCountriesByAreaRequest } from "../types";
 import { siteCategoryService } from "../services/siteCategory.service";
 
 class SiteCategoryController extends BaseController {
@@ -96,6 +96,24 @@ class SiteCategoryController extends BaseController {
         );
     };
 
+    public getCountriesByArea = async (
+        req: AuthenticatedRequest<any, any, any, IGetCountriesByAreaRequest>,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const result = await siteCategoryService.getCountriesByArea(req.query);
+                return ServiceResponse.success({
+                    message: "Lấy danh sách quốc gia thành công",
+                    data: result
+                });
+            },
+            res,
+            next
+        );
+    };
+
     public getAreas = async (
         req: AuthenticatedRequest<any, any, any, IGetAreasRequest>,
         res: Response,
@@ -104,6 +122,24 @@ class SiteCategoryController extends BaseController {
         return this.handleWithTryCatch(
             async () => {
                 const result = await siteCategoryService.getAreas(req.query);
+                return ServiceResponse.success({
+                    message: "Lấy danh sách khu vực thành công",
+                    data: result
+                });
+            },
+            res,
+            next
+        );
+    };
+
+    public getAreasAll = async (
+        req: AuthenticatedRequest<any, any, any, IGetAreasAllRequest>,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const result = await siteCategoryService.getAreasAll(req.query);
                 return ServiceResponse.success({
                     message: "Lấy danh sách khu vực thành công",
                     data: result

@@ -54,19 +54,35 @@ class SiteCategoryRepository extends BaseRespository {
         if (name) {
             query.andWhere("c.name ILIKE :name", { name: `%${name}%` });
         }
-        
+
         if (code) {
             query.andWhere("c.code ILIKE :code", { code: `%${code}%` });
         }
 
         query.orderBy("c.position", "ASC", "NULLS LAST")
-             .addOrderBy("c.created_at", "DESC");
+            .addOrderBy("c.created_at", "DESC");
 
         query.skip(pagination.skip).take(pagination.take);
 
         const [data, total] = await query.getManyAndCount();
 
         return { result: data, total };
+    }
+
+    public async getCountriesByArea(areaGuid?: string) {
+        const query = this.repository.createQueryBuilder("c")
+            .where("c.parent IS NOT NULL")
+            .andWhere("c.is_deleted = false");
+
+        if (areaGuid) {
+            query.innerJoin(SiteCategory, "area", "area.id = c.parent")
+                .andWhere("area.guid = :areaGuid", { areaGuid });
+        }
+
+        query.orderBy("c.position", "ASC", "NULLS LAST")
+            .addOrderBy("c.created_at", "DESC");
+
+        return await query.getMany();
     }
 
     public async getAreas(name: string | undefined, code: string | undefined, pagination: IPaginationMapping) {
@@ -78,19 +94,39 @@ class SiteCategoryRepository extends BaseRespository {
         if (name) {
             query.andWhere("c.name ILIKE :name", { name: `%${name}%` });
         }
-        
+
         if (code) {
             query.andWhere("c.code ILIKE :code", { code: `%${code}%` });
         }
 
         query.orderBy("c.position", "ASC", "NULLS LAST")
-             .addOrderBy("c.created_at", "DESC");
+            .addOrderBy("c.created_at", "DESC");
 
         query.skip(pagination.skip).take(pagination.take);
 
         const [data, total] = await query.getManyAndCount();
 
         return { result: data, total };
+    }
+
+    public async getAreasAll(name: string | undefined, code: string | undefined) {
+        const query = this.repository.createQueryBuilder("c")
+            // .leftJoinAndMapMany("c.countries", SiteCategory, "country", "country.parent = c.id AND country.is_deleted = false")
+            .where("c.parent IS NULL")
+            .andWhere("c.is_deleted = false");
+
+        if (name) {
+            query.andWhere("c.name ILIKE :name", { name: `%${name}%` });
+        }
+
+        if (code) {
+            query.andWhere("c.code ILIKE :code", { code: `%${code}%` });
+        }
+
+        query.orderBy("c.position", "ASC", "NULLS LAST")
+            .addOrderBy("c.created_at", "DESC");
+
+        return await query.getMany();
     }
 
     public async update(id: number, data: Partial<SiteCategory>) {

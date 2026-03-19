@@ -1,7 +1,7 @@
 import express from "express";
 import { siteCategoryController } from "../controllers/siteCategory.controller";
 import { validateRequest } from "../middlewares/validateRequest.middleware";
-import { createAreaSchema, createCountrySchema, getCountriesSchema, getAreasSchema, updateAreaSchema, updateCountrySchema } from "../schemas/siteCategory.schema";
+import { createAreaSchema, createCountrySchema, getCountriesSchema, getAreasSchema, updateAreaSchema, updateCountrySchema, getAreasAllSchema, getCountriesByAreaSchema } from "../schemas/siteCategory.schema";
 const router = express.Router();
 
 /**
@@ -294,6 +294,45 @@ router.get(
 
 /**
  * @swagger
+ * /api/v1/billion-connect/category/countries/all:
+ *   get:
+ *     summary: Lấy danh sách quốc gia (không phân trang, lọc theo ID vùng)
+ *     tags: [SiteCategory]
+ *     parameters:
+ *       - in: query
+ *         name: areaGuid
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Tìm kiếm theo GUID khu vực
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy danh sách quốc gia thành công"
+ *                 data:
+ *                   - guid: "uuid-country-vn"
+ *                     name: "Việt Nam"
+ *                     code: "VN"
+ *                     countryMcc: "452"
+ *                     position: 1
+ *                     isActive: true
+ *                     createdAt: "2024-03-17T00:00:00.000Z"
+ *                     updatedAt: "2024-03-17T00:00:00.000Z"
+ */
+router.get(
+    "/countries/all",
+    validateRequest(getCountriesByAreaSchema, ["query"]),
+    siteCategoryController.getCountriesByArea
+);
+
+/**
+ * @swagger
  * /api/v1/billion-connect/category/areas:
  *   get:
  *     summary: Lấy danh sách khu vực
@@ -350,5 +389,49 @@ router.get(
  *                 timestamp: 1710660000000
  */
 router.get("/areas", validateRequest(getAreasSchema, ["query"]), siteCategoryController.getAreas);
+
+/**
+ * @swagger
+ * /api/v1/billion-connect/category/areas/all:
+ *   get:
+ *     summary: Lấy danh sách khu vực (không phân trang)
+ *     tags: [SiteCategory]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo tên khu vực
+ *       - in: query
+ *         name: code
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo mã khu vực
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy danh sách khu vực thành công"
+ *                 data:
+ *                   - guid: "uuid-area-asia"
+ *                     name: "Châu Á"
+ *                     code: "ASIA"
+ *                     countryMcc: null
+ *                     position: 1
+ *                     isActive: true
+ *                     createdAt: "2024-03-17T00:00:00.000Z"
+ *                     updatedAt: "2024-03-17T00:00:00.000Z"
+ *                     countries:
+ *                       - guid: "uuid-country-vn"
+ *                         name: "Việt Nam"
+ *                         code: "VN"
+ *                         countryMcc: "452"
+ */
+router.get("/areas/all", validateRequest(getAreasAllSchema, ["query"]), siteCategoryController.getAreasAll);
 
 export default router;
