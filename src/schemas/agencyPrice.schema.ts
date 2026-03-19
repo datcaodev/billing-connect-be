@@ -20,13 +20,13 @@ export const agencyPriceSchema = z.object({
         skuId: z.string(),
         type: z.string(),
         name: z.string(),
-        highFlowSize: z.string(),
-        planType: z.string(),
+        highFlowSize: z.string().nullable(),
+        planType: z.string().nullable(),
         prices: z.array(z.object({
             productSku: z.string(),
             copies: z.string(),
-            retailPrice: z.string(),
-            settlementPrice: z.string(),
+            retailPrice: z.number(),
+            settlementPrice: z.number(),
         })),
     })).min(1, "Danh sách gói không được để trống"),
 });

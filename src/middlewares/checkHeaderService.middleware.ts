@@ -3,7 +3,6 @@ import "express"; // Bắt buộc để mở rộng type
 import { ValidationError } from "../utils/errors/ValidationError.error";
 import { handleServiceResponse } from "../utils";
 import { ServiceResponse } from "../types";
-import { serviceTypeRepository } from "../repositories";
 
 // Middleware validate clientId và mapping client secret
 export const checkHeaderService = async (
@@ -16,21 +15,6 @@ export const checkHeaderService = async (
 
     if (!clientId) {
       const errorMapping = new ValidationError("Không tìm thấy client-id");
-      return handleServiceResponse(
-        ServiceResponse.failure({
-          error_code: errorMapping.error_code,
-          message: errorMapping.message,
-          code: errorMapping.code
-        }),
-        res
-      );
-    }
-
-    const serviceInfo = await serviceTypeRepository.findServiceTypeByClientId({ clientId });
-    if (!serviceInfo) {
-      const errorMapping = new ValidationError(
-        "Không tìm thấy dịch vụ. Vui lòng kiểm tra lại"
-      );
       return handleServiceResponse(
         ServiceResponse.failure({
           error_code: errorMapping.error_code,

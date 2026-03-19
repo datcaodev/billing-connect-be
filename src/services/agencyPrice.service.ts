@@ -52,13 +52,13 @@ class AgencyPriceService extends BaseService {
 
                     // 3. Tính toán giá cuối cùng (final_price)
                     // Quy tắc: Nếu công thức là RETAIL_PRICE thì lấy retailPrice làm gốc, các case khác lấy settlementPrice
-                    let basePriceStr = price.settlementPrice;
+                    let basePriceValue = price.settlementPrice;
                     if (formula === PriceAdjustType.RETAIL_PRICE) {
-                        basePriceStr = price.retailPrice;
+                        basePriceValue = price.retailPrice;
                     }
 
-                    const basePrice = new Decimal(basePriceStr);
-                    let finalPrice = new Decimal(basePriceStr);
+                    const basePrice = new Decimal(basePriceValue);
+                    let finalPrice = new Decimal(basePriceValue);
 
                     // Áp dụng công thức tính toán dựa trên PriceAdjustType
                     switch (formula) {
