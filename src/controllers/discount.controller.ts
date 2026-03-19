@@ -40,6 +40,24 @@ class DiscountController extends BaseController {
             next
         );
     };
+
+    public searchDiscountsAll = async (
+        req: AuthenticatedRequest<object, object, any, any>,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const result = await discountService.searchDiscountsAll(req.query);
+                return ServiceResponse.success({
+                    message: "Lấy danh sách mã giảm giá thành công",
+                    data: result
+                });
+            },
+            res,
+            next
+        );
+    };
 }
 
 export const discountController = new DiscountController();

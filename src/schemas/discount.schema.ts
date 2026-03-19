@@ -49,3 +49,10 @@ export const searchDiscountSchema = basePaginationRequestSchema.extend({
 });
 
 export type ISearchDiscountRequest = z.infer<typeof searchDiscountSchema>;
+
+export const searchDiscountAllSchema = z.object({
+    guid: z.string().optional(),
+    status: z.nativeEnum(DiscountStatus).optional(),
+});
+
+export type ISearchDiscountAllRequest = z.infer<typeof searchDiscountAllSchema>;

@@ -1,6 +1,6 @@
 import express from "express";
 import { validateRequest } from "../middlewares/validateRequest.middleware";
-import { createDiscountSchema, searchDiscountSchema } from "../schemas/discount.schema";
+import { createDiscountSchema, searchDiscountSchema, searchDiscountAllSchema } from "../schemas/discount.schema";
 import { discountController } from "../controllers/discount.controller";
 
 const router = express.Router();
@@ -129,5 +129,42 @@ router.post("/create", validateRequest(createDiscountSchema, ["body"]), discount
  *                 timestamp: 1710660000000
  */
 router.get("/search", validateRequest(searchDiscountSchema, ["query"]), discountController.searchDiscounts);
+
+/**
+ * @swagger
+ * /api/v1/billion-connect/discount/search/all:
+ *   get:
+ *     summary: Tìm kiếm mã giảm giá (không phân trang)
+ *     tags: [Discount]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy danh sách mã giảm giá thành công"
+ *                 data:
+ *                   - id: 1
+ *                     guid: "uuid-discount"
+ *                     name: "Giảm giá mùa hè 2024"
+ *                     type: "PERCENTAGE"
+ *                     value: 10
+ *                     status: "ACTIVE"
+ *                     startDate: "2024-06-01T00:00:00.000Z"
+ *                     endDate: "2024-08-31T23:59:59.000Z"
+ */
+router.get("/search/all", validateRequest(searchDiscountAllSchema, ["query"]), discountController.searchDiscountsAll);
 
 export default router;

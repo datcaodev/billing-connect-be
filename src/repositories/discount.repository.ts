@@ -47,6 +47,34 @@ class DiscountRepository extends BaseRespository {
             return await qb.getManyAndCount();
         });
     }
+
+    public async searchDiscountsAll(data: any) {
+        return this.handleWithTryCatch(async () => {
+            const { guid, status } = data;
+
+            const qb = this.repository.createQueryBuilder("discount")
+                .where("discount.is_deleted = false")
+                .andWhere("discount.end_date >= CURRENT_TIMESTAMP");
+
+            if (guid) {
+                qb.andWhere("discount.guid = :guid", { guid });
+            }
+
+            if (status) {
+                if (status === DiscountStatus.INACTIVE) {
+                    qb.andWhere("discount.start_date > CURRENT_TIMESTAMP");
+                } else if (status === DiscountStatus.ACTIVE) {
+                    qb.andWhere("discount.start_date <= CURRENT_TIMESTAMP AND discount.end_date >= CURRENT_TIMESTAMP");
+                } else if (status === DiscountStatus.EXPIRED) {
+                    qb.andWhere("discount.end_date < CURRENT_TIMESTAMP");
+                }
+            }
+
+            qb.orderBy("discount.id", "DESC");
+
+            return await qb.getMany();
+        });
+    }
 }
 
 export const discountRepository = new DiscountRepository();
