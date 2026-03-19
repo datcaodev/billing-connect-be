@@ -428,9 +428,9 @@ router.get("/packages/:agencyGuid", validateRequest(agencyGuidParamSchema, ["par
 
 /**
  * @swagger
- * /api/v1/billion-connect/agency/packages/{agencyGuid}/all:
+ * /api/v1/billion-connect/agency/packages/{agencyGuid}/detail:
  *   get:
- *     summary: Lấy danh sách tất cả gói của đại lý (không phân trang)
+ *     summary: Lấy chi tiết bảng giá + thông tin của đại lý (không phân trang)
  *     tags: [Agency]
  *     parameters:
  *       - in: path
@@ -484,7 +484,7 @@ router.get("/packages/:agencyGuid", validateRequest(agencyGuidParamSchema, ["par
  *                           settlementPrice: "130000"
  *                           finalPrice: "120000"
  */
-router.get("/packages/:agencyGuid/all", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesAllQuerySchema, ["query"]), agencyPriceController.getAgencyPackagesAll);
+router.get("/packages/:agencyGuid/detail", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesAllQuerySchema, ["query"]), agencyPriceController.getAgencyPackagesAll);
 
 /**
  * @swagger
