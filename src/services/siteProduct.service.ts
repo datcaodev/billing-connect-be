@@ -66,7 +66,8 @@ class SiteProductService extends BaseService {
                     name: renderPlanName(variantData.highFlowSize, variantData.planType) || variantData.name,
                     status: 'active',
                     is_delete: false,
-                    name_original: variantData.name
+                    name_original: variantData.name,
+                    plan_type: variantData.planType
                 }, queryRunner);
 
                 // Lưu bảng giá chi tiết cho từng số ngày/dung lượng của gói

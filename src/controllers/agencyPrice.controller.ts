@@ -24,6 +24,25 @@ class AgencyPriceController extends BaseController {
         );
     };
 
+    public getAgencyPackagesAll = async (
+        req: AuthenticatedRequest<object, object, any, any>,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const { agencyGuid } = req.params as any;
+                const data = await agencyPriceService.getAgencyPackagesAll(agencyGuid, req.query);
+                return ServiceResponse.success({
+                    message: "Lấy bảng giá đại lý thành công",
+                    data
+                });
+            },
+            res,
+            next
+        );
+    };
+
     public createAgencyPriceTable = async (
         req: AuthenticatedRequest<object, object, any, any>,
         res: Response,

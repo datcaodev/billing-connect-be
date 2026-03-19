@@ -1,12 +1,13 @@
 import { BaseService } from "../core/baseService.core";
 import { agencyRepository, bundleByAgencyRepository, copiesByBundleRepository } from "../repositories";
-import { IAgencyPriceRequest, IGetAgencyPackagesQuery, IGetAgencyPackagesFilterQuery, IUpdateAgencyPackagePrice } from "../schemas/agencyPrice.schema";
+import { IAgencyPriceRequest, IGetAgencyPackagesQuery, IGetAgencyPackagesFilterQuery, IUpdateAgencyPackagePrice, IGetAgencyPackagesAllQuery } from "../schemas/agencyPrice.schema";
 import { PriceAdjustType } from "../enums/formula.enum";
 import Decimal from "decimal.js";
 import { NotFoundError } from "../utils/errors/NotFoundError.error";
 import { getPagination } from "../utils";
 import { mapPaginatedData } from "../core/basePagination.core";
-import { AgencyPackageDto } from "../dto/agencyPrice.dto";
+import { AgencyPackageDto, AgencyPackagesAllDto } from "../dto/agencyPrice.dto";
+import { plainToInstance } from "class-transformer";
 
 class AgencyPriceService extends BaseService {
     public async createAgencyPriceTable(data: IAgencyPriceRequest) {
@@ -159,6 +160,65 @@ class AgencyPriceService extends BaseService {
             skip: pagination.skip,
             take: pagination.take,
             total
+        });
+    }
+
+    public async getAgencyPackagesAll(agencyGuid: string, query: IGetAgencyPackagesAllQuery) {
+        // 1. Tìm đại lý
+        const agency = await agencyRepository.findByGuid(agencyGuid);
+        if (!agency) {
+            throw new NotFoundError("Không tìm thấy đại lý");
+        }
+
+        const { productSku, name } = query;
+
+        // 2. Lấy danh sách bundle của đại lý với filter (không pagination)
+        const [bundles] = await bundleByAgencyRepository.findActiveBundlesByAgentId(agency.id, { productSku, name });
+
+        if (!bundles.length) {
+            return plainToInstance(AgencyPackagesAllDto, {
+                agency,
+                packages: []
+            });
+        }
+
+        const bundleIds = bundles.map(b => b.id);
+
+        // 3. Lấy thông tin copies/prices của các bundle đó
+        const copies = await copiesByBundleRepository.findActiveCopiesByBundleIds(bundleIds);
+
+        // 4. Map dữ liệu trả về
+        const packagesList: any[] = [];
+
+        for (const bundle of bundles) {
+            const pkg = {
+                guid: bundle.guid,
+                skuId: bundle.product_sku,
+                type: bundle.type,
+                name: bundle.name,
+                highFlowSize: bundle.high_flow_size,
+                planType: bundle.plan_type,
+                prices: [] as any[]
+            };
+
+            const bundleCopies = copies.filter(c => c.bundle_id === bundle.id);
+            for (const copy of bundleCopies) {
+                const originalSnapshot = copy.formula_snapsot || {};
+                pkg.prices.push({
+                    guid: copy.guid,
+                    productSku: pkg.skuId,
+                    copies: copy.copies.toString(),
+                    retailPrice: originalSnapshot.original_retail_price || copy.base_price.toString(),
+                    settlementPrice: originalSnapshot.original_settlement_price || copy.base_price.toString(),
+                    finalPrice: copy.final_price.toString()
+                });
+            }
+            packagesList.push(pkg);
+        }
+
+        return plainToInstance(AgencyPackagesAllDto, {
+            agency,
+            packages: packagesList
         });
     }
 

@@ -23,3 +23,27 @@ export class AgencyPackageDto {
     @Type(() => AgencyPackagePriceDto)
     prices: AgencyPackagePriceDto[];
 }
+
+@Exclude()
+export class AgencyInfoDto {
+    @Expose() guid: string;
+    @Expose() code: string;
+    @Expose() name: string;
+    @Expose() email: string;
+    @Expose() phone: string;
+    @Expose() address: string;
+    @Expose() website: string;
+    @Expose() formula: any;
+    @Expose({ name: "formula_note" }) formulaNote: string;
+}
+
+@Exclude()
+export class AgencyPackagesAllDto {
+    @Expose()
+    @Type(() => AgencyInfoDto)
+    agency: AgencyInfoDto;
+
+    @Expose()
+    @Type(() => AgencyPackageDto)
+    packages: AgencyPackageDto[];
+}

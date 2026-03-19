@@ -57,6 +57,14 @@ export const getAgencyPackagesFilterQuerySchema = basePaginationRequestSchema.ex
 });
 
 export type IGetAgencyPackagesQuery = z.infer<typeof getAgencyPackagesQuerySchema>;
+
+export const getAgencyPackagesAllQuerySchema = z.object({
+    productSku: z.string().optional(),
+    name: z.string().optional(),
+});
+
+export type IGetAgencyPackagesAllQuery = z.infer<typeof getAgencyPackagesAllQuerySchema>;
+
 export const updateAgencyPackagePriceSchema = z.object({
     agencyGuid: z.string().uuid("agencyGuid không hợp lệ"),
     copiesGuid: z.string().uuid("copiesGuid không hợp lệ"),

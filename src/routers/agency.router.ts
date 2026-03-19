@@ -1,7 +1,7 @@
 import express from "express";
 import { validateRequest } from "../middlewares/validateRequest.middleware";
 import { createAgencySchema, updateAgencySchema, searchAgencySchema, agencyPriceSchema } from "../schemas";
-import { agencyGuidParamSchema, getAgencyPackagesQuerySchema, getAgencyPackagesFilterQuerySchema, updateAgencyPackagePriceSchema } from "../schemas/agencyPrice.schema";
+import { agencyGuidParamSchema, getAgencyPackagesQuerySchema, getAgencyPackagesFilterQuerySchema, updateAgencyPackagePriceSchema, getAgencyPackagesAllQuerySchema } from "../schemas/agencyPrice.schema";
 import { agencyController, agencyPriceController } from "../controllers";
 
 const router = express.Router();
@@ -425,6 +425,66 @@ router.post("/price-table", validateRequest(agencyPriceSchema, ["body"]), agency
  *                 timestamp: 1710660000000
  */
 router.get("/packages/:agencyGuid", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesQuerySchema, ["query"]), agencyPriceController.getAgencyPackages);
+
+/**
+ * @swagger
+ * /api/v1/billion-connect/agency/packages/{agencyGuid}/all:
+ *   get:
+ *     summary: Lấy danh sách tất cả gói của đại lý (không phân trang)
+ *     tags: [Agency]
+ *     parameters:
+ *       - in: path
+ *         name: agencyGuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: productSku
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo mã gói
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Tìm kiếm theo tên gói
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               example:
+ *                 success: true
+ *                 message: "Lấy bảng giá đại lý thành công"
+ *                 data:
+ *                   agency:
+ *                     guid: "uuid-agency"
+ *                     code: "AG001"
+ *                     name: "Đại lý Cầu Giấy"
+ *                     email: "caugiay@agency.com"
+ *                     phone: "0987654321"
+ *                     address: "123 Cầu Giấy, Hà Nội"
+ *                     website: "https://agency-caugiay.com"
+ *                     formula: null
+ *                     formula_note: null
+ *                   packages:
+ *                     - guid: "uuid-bundle-1"
+ *                       skuId: "uuid-product-1"
+ *                       name: "Gói 10GB 7 Ngày"
+ *                       type: "esim"
+ *                       highFlowSize: "10"
+ *                       planType: "daily"
+ *                       prices:
+ *                         - guid: "uuid-price-1"
+ *                           productSku: "uuid-product-1"
+ *                           copies: "1"
+ *                           retailPrice: "150000"
+ *                           settlementPrice: "130000"
+ *                           finalPrice: "120000"
+ */
+router.get("/packages/:agencyGuid/all", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesAllQuerySchema, ["query"]), agencyPriceController.getAgencyPackagesAll);
 
 /**
  * @swagger
