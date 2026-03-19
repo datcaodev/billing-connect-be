@@ -23,6 +23,12 @@ class AgencyPriceService extends BaseService {
             // Cập nhật công thức cho đại lý
             await agencyRepository.updateAgencyFormula(agency.id, { type: formula, value: amount }, remark, queryRunner);
 
+            // 2. Xóa các bảng giá cũ của đại lý
+            // Xóa chi tiết giá (copies) trước
+            await copiesByBundleRepository.deleteByAgentId(agency.id, queryRunner);
+            // Xóa gói (bundles) sau (có CASCADE nhưng xóa explicit cho chắc theo yêu cầu)
+            await bundleByAgencyRepository.deleteByAgentId(agency.id, queryRunner);
+
             // Duyệt qua danh sách các gói (packages) được gửi lên
             for (const pkg of packages) {
                 // 2. Lưu hoặc Cập nhật bảng BizBundleByAgency (liên kết giữa đại lý và bundle)

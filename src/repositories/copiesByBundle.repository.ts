@@ -66,6 +66,14 @@ class CopiesByBundleRepository extends BaseRespository {
         return await AppDataSource.getRepository(BizCopiesByBundle)
             .update({ guid }, { final_price: price, formula_snapsot: null });
     }
+
+    public async deleteByAgentId(agentId: number, queryRunner?: any) {
+        const repo = queryRunner ? queryRunner.manager.getRepository(BizCopiesByBundle) : AppDataSource.getRepository(BizCopiesByBundle);
+        return await repo.createQueryBuilder("copy")
+            .delete()
+            .where("bundle_id IN (SELECT id FROM biz_bundle_by_agency WHERE agent_id = :agentId)", { agentId })
+            .execute();
+    }
 }
 
 export const copiesByBundleRepository = new CopiesByBundleRepository();

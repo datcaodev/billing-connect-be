@@ -52,7 +52,7 @@ class AgencyPriceController extends BaseController {
             async () => {
                 await agencyPriceService.createAgencyPriceTable(req.body);
                 return ServiceResponse.success({
-                    message: "Tạo bảng giá đại lý thành công",
+                    message: "Thao tác thành công",
                     data: true
                 });
             },
