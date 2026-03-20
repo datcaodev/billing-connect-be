@@ -56,10 +56,10 @@ class BundleByAgencyRepository extends BaseRespository {
 
     public async findActiveBundlesFiltered(
         agentId: number,
-        filters: { productSku?: string, name?: string, regionGuid?: string, countryGuid?: string[] } = {},
+        filters: { productSku?: string, name?: string, countryMcc?: string[], areaName?: string } = {},
         pagination?: { skip: number, take: number, orderBy: FindOptionsOrderValue }
     ) {
-        const { productSku, name, regionGuid, countryGuid } = filters;
+        const { productSku, name, countryMcc, areaName } = filters;
         const qb = AppDataSource.getRepository(BizBundleByAgency)
             .createQueryBuilder("bundle")
             .where("bundle.agent_id = :agentId", { agentId })
@@ -73,19 +73,12 @@ class BundleByAgencyRepository extends BaseRespository {
             qb.andWhere("bundle.name ILIKE :name", { name: `%${name}%` });
         }
 
-        // Join to filter by Region/Country via SiteCategory
-        if (regionGuid || (countryGuid && countryGuid.length > 0)) {
-            qb.innerJoin(SiteProductVariant, "variant", "variant.product_sku = bundle.product_sku")
-                .innerJoin(SiteProductCategoryMapping, "mapping", "mapping.product_id = variant.site_product_id")
-                .innerJoin(SiteCategory, "category", "category.id = mapping.category_id");
+        if (countryMcc && countryMcc.length > 0) {
+            qb.andWhere("bundle.country_mcc IN (:...countryMcc)", { countryMcc });
+        }
 
-            if (regionGuid && countryGuid && countryGuid.length > 0) {
-                qb.andWhere("(category.guid = :regionGuid OR category.guid IN (:...countryGuid))", { regionGuid, countryGuid });
-            } else if (regionGuid) {
-                qb.andWhere("category.guid = :regionGuid", { regionGuid });
-            } else if (countryGuid && countryGuid.length > 0) {
-                qb.andWhere("category.guid IN (:...countryGuid)", { countryGuid });
-            }
+        if (areaName) {
+            qb.andWhere("bundle.area_name ILIKE :areaName", { areaName: `%${areaName}%` });
         }
 
         if (pagination) {

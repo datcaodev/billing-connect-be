@@ -22,6 +22,15 @@ export class BizBundleByAgency extends BaseTimeEntity {
     @Column({ nullable: true })
     name: string;
 
+    @Column({ nullable: true })
+    country_mcc: string;
+
+    @Column({ nullable: true })
+    country_name: string;
+
+    @Column({ nullable: true })
+    area_name: string;
+
     @Column({ default: true, nullable: true })
     is_active: boolean;
 

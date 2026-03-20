@@ -44,5 +44,18 @@ const router = express.Router();
 // lấy danh sách quốc gia
 router.get("/countries", siteController.getAllBillionCountries);
 
+/**
+ * @swagger
+ * /api/v1/billion-connect/site/areas:
+ *   get:
+ *     summary: Lấy danh sách vùng (Châu lục)
+ *     tags: [Site]
+ *     responses:
+ *       200:
+ *         description: Thành công
+ */
+// lấy danh sách vùng
+router.get("/areas", siteController.getAllAreas);
+
 
 export default router;

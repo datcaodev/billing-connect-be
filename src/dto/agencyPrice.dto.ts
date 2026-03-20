@@ -18,6 +18,9 @@ export class AgencyPackageDto {
     @Expose() type: string;
     @Expose() highFlowSize: string;
     @Expose() planType: string;
+    @Expose() countryMcc: string;
+    @Expose() countryName: string;
+    @Expose() areaName: string;
 
     @Expose()
     @Type(() => AgencyPackagePriceDto)

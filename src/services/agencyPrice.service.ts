@@ -1,5 +1,5 @@
 import { BaseService } from "../core/baseService.core";
-import { agencyRepository, bundleByAgencyRepository, copiesByBundleRepository } from "../repositories";
+import { agencyRepository, billionProductRepository, bundleByAgencyRepository, copiesByBundleRepository } from "../repositories";
 import { IAgencyPriceRequest, IGetAgencyPackagesQuery, IGetAgencyPackagesFilterQuery, IUpdateAgencyPackagePrice, IGetAgencyPackagesAllQuery } from "../schemas/agencyPrice.schema";
 import { PriceAdjustType } from "../enums/formula.enum";
 import Decimal from "decimal.js";
@@ -31,6 +31,22 @@ class AgencyPriceService extends BaseService {
 
             // Duyệt qua danh sách các gói (packages) được gửi lên
             for (const pkg of packages) {
+                // 3. Lấy thông tin quốc gia/vùng từ bảng billion
+                const productCountries = await billionProductRepository.getProductCountries(pkg.skuId);
+                let countryMcc = null;
+                let countryName = null;
+                let areaName = null;
+
+                if (productCountries.length > 0) {
+                    areaName = productCountries[0].country_details?.continent || null;
+
+                    if (productCountries.length === 1) {
+                        const countryInfo = productCountries[0];
+                        countryMcc = countryInfo.country_mcc;
+                        countryName = countryInfo.country_details?.name || null;
+                    }
+                }
+
                 // 2. Lưu hoặc Cập nhật bảng BizBundleByAgency (liên kết giữa đại lý và bundle)
                 const bundleData = {
                     agent_id: agency.id,
@@ -39,6 +55,9 @@ class AgencyPriceService extends BaseService {
                     name: pkg.name,
                     high_flow_size: pkg.highFlowSize,
                     plan_type: pkg.planType,
+                    country_mcc: countryMcc,
+                    country_name: countryName,
+                    area_name: areaName,
                     is_active: true
                 };
 
@@ -235,13 +254,18 @@ class AgencyPriceService extends BaseService {
             throw new NotFoundError("Không tìm thấy đại lý");
         }
 
-        const { page, size, sortBy, productSku, name, regionGuid, countryGuid } = query;
+        const { page, size, sortBy, productSku, name, countryMcc, areaName } = query;
         const pagination = getPagination({ page, size, sortBy });
+
+        // Đảm bảo countryMcc luôn là array nếu có giá trị (do zod transform không tự gán lại vào req.query)
+        const countryMccArray = Array.isArray(countryMcc)
+            ? countryMcc
+            : (typeof (countryMcc as any) === "string" ? (countryMcc as any).split(",").map((v: any) => v.trim()).filter((v: any) => v !== "") : undefined);
 
         // 2. Lấy danh sách bundle của đại lý với filter và pagination
         const [bundles, total] = await bundleByAgencyRepository.findActiveBundlesFiltered(
             agency.id,
-            { productSku, name, regionGuid, countryGuid },
+            { productSku, name, countryMcc: countryMccArray, areaName },
             pagination
         );
 
@@ -271,6 +295,9 @@ class AgencyPriceService extends BaseService {
                 name: bundle.name,
                 highFlowSize: bundle.high_flow_size,
                 planType: bundle.plan_type,
+                countryMcc: bundle.country_mcc,
+                areaName: bundle.area_name,
+                countryName: bundle.country_name,
                 prices: [] as any[]
             };
 

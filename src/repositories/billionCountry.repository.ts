@@ -9,6 +9,16 @@ class BillionCountryRepository extends BaseRespository {
             return data;
         });
     };
+    public getAllAreas = (): Promise<string[]> => {
+        return this.handleWithTryCatch(async () => {
+            const data = await AppDataSource.getRepository(BillionCountry)
+                .createQueryBuilder("country")
+                .select("DISTINCT(country.continent)", "continent")
+                .where("country.continent IS NOT NULL")
+                .getRawMany();
+            return data.map(item => item.continent);
+        });
+    };
 }
 
 export const billionCountryRepository = new BillionCountryRepository();

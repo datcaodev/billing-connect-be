@@ -1,5 +1,6 @@
 import { AppDataSource } from "../config/database.config";
 import { BillionProduct } from "../entity/billionProduct.entity";
+import { BillionProductCountry } from "../entity/billionProductCountry.entity";
 import { BaseRespository } from "../core/baseRepositories.core";
 import { ISearchBillionProduct } from "../schemas";
 
@@ -37,6 +38,16 @@ class BillionProductRepository extends BaseRespository {
                 .where("product.sku_id = :sku_id", { sku_id })
                 .getOne();
             return product;
+        });
+    }
+
+    public async getProductCountries(sku_id: string) {
+        return this.handleWithTryCatch(async () => {
+            const repository = AppDataSource.getRepository(BillionProductCountry);
+            return await repository.find({
+                where: { product_sku: sku_id },
+                relations: ["country_details"]
+            });
         });
     }
 }

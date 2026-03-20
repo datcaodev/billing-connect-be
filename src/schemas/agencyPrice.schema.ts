@@ -49,11 +49,11 @@ export const getAgencyPackagesQuerySchema = basePaginationRequestSchema.extend({
 export const getAgencyPackagesFilterQuerySchema = basePaginationRequestSchema.extend({
     productSku: z.string().optional(),
     name: z.string().optional(),
-    regionGuid: z.string().uuid().optional(),
-    countryGuid: z.preprocess((val) => {
-        if (typeof val === "string") return [val];
+    countryMcc: z.preprocess((val) => {
+        if (typeof val === "string") return val.split(",").map(v => v.trim()).filter(v => v !== "");
         return val;
-    }, z.array(z.string().uuid())).optional(),
+    }, z.array(z.string())).optional(),
+    areaName: z.string().optional(),
 });
 
 export type IGetAgencyPackagesQuery = z.infer<typeof getAgencyPackagesQuerySchema>;

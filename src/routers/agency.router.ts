@@ -520,17 +520,17 @@ router.get("/packages/:agencyGuid/detail", validateRequest(agencyGuidParamSchema
  *         schema:
  *           type: string
  *       - in: query
- *         name: regionGuid
- *         schema:
- *           type: string
- *         description: GUID của Vùng (Category)
- *       - in: query
- *         name: countryGuid
+ *         name: countryMcc
  *         schema:
  *           type: array
  *           items:
  *             type: string
- *         description: Danh sách GUID của Quốc gia (Category)
+ *         description: Danh sách MCC của Quốc gia
+ *       - in: query
+ *         name: areaName
+ *         schema:
+ *           type: string
+ *         description: Tên vùng (Châu lục)
  *     responses:
  *       200:
  *         description: Thành công
