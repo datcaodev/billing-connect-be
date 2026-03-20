@@ -35,7 +35,11 @@ export const searchSiteProductSchema = basePaginationRequestSchema.extend({
     name: z.string().optional(),
     status: z.string().optional(),
     categoryCode: z.string().optional(),
-    categoryName: z.string().optional()
+    categoryName: z.string().optional(),
+    areaGuid: z.string().uuid("areaGuid phải là UUID hợp lệ").optional(),
+    countryGuid: z.string().uuid("countryGuid phải là UUID hợp lệ").optional(),
+    fromDate: z.string().regex(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/, "fromDate phải có định dạng DD/MM/YYYY").optional(),
+    toDate: z.string().regex(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/, "toDate phải có định dạng DD/MM/YYYY").optional()
 });
 
 export const getOptionPriceSchema = z.object({

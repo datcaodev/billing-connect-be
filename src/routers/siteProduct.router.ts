@@ -149,6 +149,30 @@ const siteProductRouter: Router = (() => {
      *         schema:
      *           type: string
      *         description: Tên danh mục
+     *       - in: query
+     *         name: areaGuid
+     *         schema:
+     *           type: string
+     *           format: uuid
+     *         description: GUID của khu vực (area)
+     *       - in: query
+     *         name: countryGuid
+     *         schema:
+     *           type: string
+     *           format: uuid
+     *         description: GUID của quốc gia (country)
+     *       - in: query
+     *         name: fromDate
+     *         schema:
+     *           type: string
+     *           example: "20/03/2024"
+     *         description: Tìm từ ngày (Định dạng DD/MM/YYYY)
+     *       - in: query
+     *         name: toDate
+     *         schema:
+     *           type: string
+     *           example: "25/03/2024"
+     *         description: Tìm đến ngày (Định dạng DD/MM/YYYY)
      *     responses:
      *       200:
      *         description: Thành công

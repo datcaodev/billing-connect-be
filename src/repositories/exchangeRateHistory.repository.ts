@@ -46,7 +46,8 @@ class ExchangeRateHistoryRepository extends BaseRespository {
             if (startDate) {
                 const [day, month, year] = startDate.split("/");
                 const parsedDate = `${year}-${month}-${day}`;
-                qb.andWhere("DATE(exchangeRateHistory.start_date) = :parsedDate", { parsedDate });
+                qb.andWhere("DATE(exchangeRateHistory.start_date) <= :parsedDate", { parsedDate })
+                    .andWhere("DATE(exchangeRateHistory.end_date) >= :parsedDate", { parsedDate });
             }
 
             qb.orderBy("exchangeRateHistory.created_at", orderBy as "ASC" | "DESC")

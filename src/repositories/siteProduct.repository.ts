@@ -2,6 +2,10 @@ import { AppDataSource } from "../config/database.config";
 import { SiteProduct } from "../entity/siteProduct.entity";
 import { BaseRespository } from "../core/baseRepositories.core";
 import { QueryRunner } from "typeorm";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 class SiteProductRepository extends BaseRespository {
     private repository = AppDataSource.getRepository(SiteProduct);
@@ -26,7 +30,7 @@ class SiteProductRepository extends BaseRespository {
 
     public async searchProducts(data: any, pagination: any) {
         return this.handleWithTryCatch(async () => {
-            const { status, name, sku_id, category_code, category_name } = data;
+            const { status, name, skuId, categoryCode, categoryName, areaGuid, countryGuid, fromDate, toDate } = data;
             const { orderBy, skip, take } = pagination;
 
             const qb = this.repository.createQueryBuilder("product")
@@ -45,16 +49,34 @@ class SiteProductRepository extends BaseRespository {
                 qb.andWhere("product.status = :status", { status });
             }
 
-            if (sku_id) {
-                qb.andWhere("EXISTS (SELECT 1 FROM site_product_variant v WHERE v.site_product_id = product.id AND v.product_sku ILIKE :sku_id)", { sku_id: `%${sku_id}%` });
+            if (skuId) {
+                qb.andWhere("EXISTS (SELECT 1 FROM site_product_variant v WHERE v.site_product_id = product.id AND v.product_sku ILIKE :skuId)", { skuId: `%${skuId}%` });
             }
 
-            if (category_code) {
-                qb.andWhere("EXISTS (SELECT 1 FROM site_products_categories_mapping spcm INNER JOIN site_categories c ON c.id = spcm.category_id WHERE spcm.product_id = product.id AND c.code ILIKE :category_code)", { category_code: `%${category_code}%` });
+            if (categoryCode) {
+                qb.andWhere("EXISTS (SELECT 1 FROM site_products_categories_mapping spcm INNER JOIN site_categories c ON c.id = spcm.category_id WHERE spcm.product_id = product.id AND c.code ILIKE :categoryCode)", { categoryCode: `%${categoryCode}%` });
             }
 
-            if (category_name) {
-                qb.andWhere("EXISTS (SELECT 1 FROM site_products_categories_mapping spcm INNER JOIN site_categories c ON c.id = spcm.category_id WHERE spcm.product_id = product.id AND c.name ILIKE :category_name)", { category_name: `%${category_name}%` });
+            if (categoryName) {
+                qb.andWhere("EXISTS (SELECT 1 FROM site_products_categories_mapping spcm INNER JOIN site_categories c ON c.id = spcm.category_id WHERE spcm.product_id = product.id AND c.name ILIKE :categoryName)", { categoryName: `%${categoryName}%` });
+            }
+
+            if (areaGuid) {
+                qb.andWhere("EXISTS (SELECT 1 FROM site_products_categories_mapping spcm INNER JOIN site_categories c ON c.id = spcm.category_id WHERE spcm.product_id = product.id AND c.guid = :areaGuid)", { areaGuid });
+            }
+
+            if (countryGuid) {
+                qb.andWhere("EXISTS (SELECT 1 FROM site_products_categories_mapping spcm INNER JOIN site_categories c ON c.id = spcm.category_id WHERE spcm.product_id = product.id AND c.guid = :countryGuid)", { countryGuid });
+            }
+
+            if (fromDate) {
+                const startOfDay = dayjs(fromDate, "DD/MM/YYYY").startOf("day").toDate();
+                qb.andWhere("product.created_at >= :fromDate", { fromDate: startOfDay });
+            }
+
+            if (toDate) {
+                const endOfDay = dayjs(toDate, "DD/MM/YYYY").endOf("day").toDate();
+                qb.andWhere("product.created_at <= :toDate", { toDate: endOfDay });
             }
 
             qb.orderBy("product.id", orderBy as "ASC" | "DESC")
