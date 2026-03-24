@@ -1,6 +1,6 @@
 import express from "express";
 import { orderController } from "../controllers/order.controller";
-import { searchOrderSchema } from "../schemas/order.schema";
+import { searchOrderSchema, getOrderDetailsSchema } from "../schemas/order.schema";
 import { validateRequest } from "../middlewares/validateRequest.middleware";
 
 const orderRouter = express.Router();
@@ -60,6 +60,29 @@ orderRouter.get(
     "/search",
     validateRequest(searchOrderSchema, ["query"]),
     orderController.searchOrders
+);
+
+/**
+ * @swagger
+ * /api/v1/billion-connect/order/{orderId}:
+ *   get:
+ *     summary: Lấy thông chi tiết đơn hàng theo orderId
+ *     tags: [Order]
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mã đơn hàng (order_id)
+ *     responses:
+ *       200:
+ *         description: Thành công
+ */
+orderRouter.get(
+    "/:orderId",
+    validateRequest(getOrderDetailsSchema, ["params"]),
+    orderController.getOrderDetails
 );
 
 export default orderRouter;

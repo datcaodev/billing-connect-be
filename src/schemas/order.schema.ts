@@ -9,3 +9,9 @@ export const searchOrderSchema = basePaginationRequestSchema.extend({
 });
 
 export type ISearchOrderRequest = z.infer<typeof searchOrderSchema>;
+
+export const getOrderDetailsSchema = z.object({
+    orderId: z.string({
+        required_error: "Thiếu tham số 'orderId'",
+    }).min(1, "orderId không được để trống"),
+});

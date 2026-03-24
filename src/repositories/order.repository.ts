@@ -37,6 +37,25 @@ class OrderRepository extends BaseRespository {
             return { result, total };
         });
     }
+
+    public async findByOrderId(orderId: string): Promise<Order | null> {
+        return await this.repository.findOne({ where: { order_id: orderId } });
+    }
+
+    public async findDetailByOrderId(orderId: string) {
+        return await AppDataSource.getRepository("order_details").findOne({ where: { order_id: orderId } });
+    }
+
+    public async findItemsByOrderId(orderId: string) {
+        return await AppDataSource.getRepository("order_items").find({ where: { order_id: orderId } });
+    }
+
+    public async findHistoryByOrderId(orderId: string) {
+        return await AppDataSource.getRepository("order_status_history").find({
+            where: { order_id: orderId },
+            order: { created_at: "DESC" }
+        });
+    }
 }
 
 export const orderRepository = new OrderRepository();

@@ -1,4 +1,4 @@
-import { Expose, Transform } from "class-transformer";
+import { Expose, Transform, Type } from "class-transformer";
 
 export class OrderDto {
     @Expose() id: string; // BIGINT in DB can be string in JS if it exceeds safe integer range
@@ -15,7 +15,7 @@ export class OrderDto {
     @Expose({ name: "transaction_id" }) transactionId: string;
     @Expose({ name: "created_at" }) createdAt: Date;
 
-    @Expose()
+    @Expose({ toPlainOnly: true })
     get payment_status_label(): string {
         if (this.paymentStatus === "PENDING") return "Chờ thanh toán";
         if (this.paymentStatus === "SUCCESS") {
@@ -28,7 +28,7 @@ export class OrderDto {
         return this.paymentStatus || "";
     }
 
-    @Expose()
+    @Expose({ toPlainOnly: true })
     get status_label(): string {
         switch (this.status) {
             case "CREATE": return "Tạo đơn hàng thành công";
@@ -40,4 +40,37 @@ export class OrderDto {
             default: return this.status || "";
         }
     }
+}
+
+export class OrderItemDto {
+    @Expose() id: string;
+    @Expose({ name: "order_id" }) orderId: string;
+    @Expose({ name: "product_id" }) productId: number;
+    @Expose({ name: "product_sku" }) productSku: string;
+    @Expose() price: number;
+    @Expose({ name: "discount_price" }) discountPrice: number;
+    @Expose() quantity: number;
+    @Expose() copies: string;
+    @Expose({ name: "created_at" }) createdAt: Date;
+}
+
+export class OrderDetailDto {
+    @Expose() id: string;
+    @Expose({ name: "order_id" }) orderId: string;
+    @Expose({ name: "customer_email" }) customerEmail: string;
+    @Expose({ name: "customer_name" }) customerName: string;
+    @Expose({ name: "customer_phone" }) customerPhone: string;
+    @Expose({ name: "billing_address" }) billingAddress: any;
+    @Expose({ name: "extra_data" }) extraData: any;
+    @Expose({ name: "created_at" }) createdAt: Date;
+}
+
+export class OrderFullDetailsDto extends OrderDto {
+    @Expose()
+    @Type(() => OrderDetailDto)
+    detail: OrderDetailDto;
+
+    @Expose()
+    @Type(() => OrderItemDto)
+    items: OrderItemDto[];
 }

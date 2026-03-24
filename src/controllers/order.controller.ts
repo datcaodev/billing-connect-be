@@ -17,6 +17,21 @@ class OrderController extends BaseController {
             next
         );
     };
+
+    public getOrderDetails = async (req: Request, res: Response, next: NextFunction) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const { orderId } = req.params;
+                const data = await orderService.getOrderDetails(orderId);
+                return ServiceResponse.success({
+                    message: "Lấy chi tiết đơn hàng thành công",
+                    data
+                });
+            },
+            res,
+            next
+        );
+    };
 }
 
 export const orderController = new OrderController();
