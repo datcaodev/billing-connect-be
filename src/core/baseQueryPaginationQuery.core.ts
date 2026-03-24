@@ -2,28 +2,28 @@
 import { PaginationResult } from "../types/response.type";
 import { IQueryOption, IQueryPaginationOption } from "../types/request.type";
 import { isNumber } from "lodash";
-import { DatabaseSingleton } from "../config/database.config";
+import { DatabaseORMSingleton } from "../config/database.config";
 import { QueryResult } from "pg";
 
 export class BaseQuery {
   // ✅ Query thông thường (không phân trang)
   static async query<T>(data: IQueryOption): Promise<QueryResult<T>> {
     const { params = [], sql } = data
-    const database = DatabaseSingleton.getInstance().getPool()
+    const database = DatabaseORMSingleton.getInstance()
     const rows = await database.query(sql, params);
     return rows;
   }
 
   // ✅ Query có phân trang
   static async paginate<T>(data: IQueryPaginationOption): Promise<PaginationResult<T>> {
-    const database = DatabaseSingleton.getInstance().getPool()
-    const { 
-      params = [], 
-      queryParams = {}, 
-      tableName, 
-      whereCondition = "1=1" 
+    const database = DatabaseORMSingleton.getInstance()
+    const {
+      params = [],
+      queryParams = {},
+      tableName,
+      whereCondition = "1=1"
     } = data
-     // Gán giá trị mặc định nếu `undefined`
+    // Gán giá trị mặc định nếu `undefined`
     const page = (queryParams?.page && isNumber(queryParams?.page)) ? queryParams?.page : 1;
     const limit = (queryParams?.limit && isNumber(queryParams?.limit)) ? queryParams?.limit : 10;
     const sortBy = queryParams?.sortBy ?? "id";

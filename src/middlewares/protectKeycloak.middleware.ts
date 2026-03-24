@@ -6,12 +6,12 @@ import { handleServiceResponse } from "../utils";
 import { AuthenticatedRequest, ServiceResponse } from "../types";
 import { StatusCodes } from "http-status-codes";
 import { AppError } from "../utils/errors/AppError.error";
-import { ITokenPayload } from "../types/token.type";
 import { isEmpty } from "lodash";
 import { AuthorizationError } from "../utils/errors/AuthorizationError.error";
+import { ITokenPayload } from "../types/token.type";
 
 export function keycloakProtect(requiredRole?: string) {
-  return async function(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  return async function (req: AuthenticatedRequest, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {

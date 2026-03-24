@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
     "test": "env-cmd -f .env nodemon --watch src --ext ts --exec ts-node src/index.ts",
     "dev": "env-cmd -f .env.development nodemon --watch src --ext ts --exec ts-node src/index.ts",
-    "prod": "env-cmd -f .env.production nodemon --watch src --ext ts --exec ts-node src/index.ts",
+    "prod:test": "env-cmd -f .env.production nodemon --watch src --ext ts --exec ts-node src/index.ts",
     "lint": "eslint . --ext .ts",
     "migration:prod": "env-cmd -f .env.production npx tsx ./node_modules/typeorm/cli.js migration:generate ./src/migration/AddOtpTable -d ./src/config/data-source.ts",
     "migration:dev": "env-cmd -f .env.development npx tsx ./node_modules/typeorm/cli.js migration:generate ./src/migration/AddOtpTable -d ./src/config/data-source.ts"
@@ -34,8 +36,6 @@
     "eslint": "^9.16.0",
     "eslint-plugin-react": "^7.37.2",
     "globals": "^15.13.0",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.0"
@@ -44,6 +44,8 @@
     "@aws-sdk/client-s3": "^3.758.0",
     "@keycloak/keycloak-admin-client": "22.0.5",
     "@s3pweb/keycloak-admin-client-cjs": "^26.2.0",
+    "swagger-ui-express": "^5.0.1",
+    "swagger-jsdoc": "^6.2.8",
     "aws-sdk": "^2.1692.0",
     "axios": "^1.8.4",
     "axios-retry": "^4.5.0",

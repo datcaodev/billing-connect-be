@@ -1,4 +1,3 @@
-import { OTP_TYPE } from "../enums/otp.enum";
 
 /**
  * Payload của Access Token được decode từ Keycloak
@@ -90,5 +89,5 @@ interface Realmaccess {
 
 export interface ITokenOTP {
   email: string;
-  type: OTP_TYPE;
+  type: any;
 }

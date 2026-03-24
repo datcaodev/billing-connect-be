@@ -25,8 +25,8 @@ export const agencyPriceSchema = z.object({
         prices: z.array(z.object({
             productSku: z.string(),
             copies: z.string(),
-            retailPrice: z.number(),
-            settlementPrice: z.number(),
+            retailPrice: z.string(),
+            settlementPrice: z.string(),
         })),
     })).min(1, "Danh sách gói không được để trống"),
 });
