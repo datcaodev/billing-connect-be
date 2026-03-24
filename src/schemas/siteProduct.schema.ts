@@ -46,6 +46,7 @@ export const getOptionPriceSchema = z.object({
     productSku: z.string({
         required_error: "Thiếu tham số 'productSku'",
     }).min(1, "productSku không được để trống"),
+    siteProductGuid: z.string().uuid("siteProductGuid phải là UUID hợp lệ").optional(),
 });
 
 export const searchVariantsByDiscountSchema = z.object({

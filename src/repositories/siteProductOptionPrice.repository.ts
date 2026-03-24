@@ -9,9 +9,10 @@ class SiteProductOptionPriceRepository extends BaseRespository {
     public async upsertOptionPrice(data: Partial<SiteProductOptionPrice>, queryRunner?: QueryRunner): Promise<SiteProductOptionPrice> {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
 
-        // Check if option price already exists for this sku and copies
+        // Check if option price already exists for this product, sku and copies
         const existing = await repo.findOne({
             where: {
+                site_product_id: data.site_product_id,
                 product_sku: data.product_sku,
                 copies: data.copies
             }
@@ -26,15 +27,19 @@ class SiteProductOptionPriceRepository extends BaseRespository {
         return await repo.save(optionPrice);
     }
 
-    public async findBySku(sku: string): Promise<SiteProductOptionPrice[]> {
+    public async findBySku(sku: string, productId?: number): Promise<SiteProductOptionPrice[]> {
+        const where: any = { product_sku: sku, is_delete: false };
+        if (productId) {
+            where.site_product_id = productId;
+        }
         return await this.repository.find({
-            where: { product_sku: sku, is_delete: false },
+            where,
             order: { copies: "ASC" }
         });
     }
     public async findVariantsByDiscount(discountId: number) {
         const qb = this.repository.createQueryBuilder("op")
-            .leftJoinAndSelect("site_product_variant", "spv", "spv.product_sku = op.product_sku")
+            .leftJoinAndSelect("site_product_variant", "spv", "spv.product_sku = op.product_sku AND spv.site_product_id = op.site_product_id")
             .where("op.discount_id = :discountId", { discountId })
             .select([
                 "op.guid AS op_guid",
@@ -93,6 +98,14 @@ class SiteProductOptionPriceRepository extends BaseRespository {
     public async softDeleteBySkus(skus: string[], queryRunner?: QueryRunner): Promise<void> {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
         await repo.update({ product_sku: In(skus) }, { is_delete: true });
+    }
+
+    /**
+     * Xóa mềm các option prices theo Site Product ID
+     */
+    public async softDeleteByProductId(productId: number, queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
+        await repo.update({ site_product_id: productId }, { is_delete: true });
     }
 }
 

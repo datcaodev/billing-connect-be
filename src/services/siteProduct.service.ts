@@ -90,6 +90,7 @@ class SiteProductService extends BaseService {
                     }
 
                     await siteProductOptionPriceRepository.upsertOptionPrice({
+                        site_product_id: product.id,
                         product_sku: variantData.productSku,
                         copies: optionData.copies,
                         retail_price: bundleCopy.final_price,
@@ -128,9 +129,17 @@ class SiteProductService extends BaseService {
     /**
      * Lấy danh sách mức giá theo SKU
      */
-    public async getOptionPricesBySku(sku: string) {
+    public async getOptionPricesBySku(sku: string, siteProductGuid?: string) {
         return await this.handleWithTryCatch(async () => {
-            const prices = await siteProductOptionPriceRepository.findBySku(sku);
+            let productId: number | undefined = undefined;
+            if (siteProductGuid) {
+                const product = await siteProductRepository.findByGuid(siteProductGuid);
+                if (product) {
+                    productId = product.id;
+                }
+            }
+
+            const prices = await siteProductOptionPriceRepository.findBySku(sku, productId);
             const rateData = await exchangeRateRepository.findData();
             const rate = rateData && rateData.rate ? new Decimal(rateData.rate) : new Decimal(1);
 
@@ -232,20 +241,14 @@ class SiteProductService extends BaseService {
                 throw new NotFoundError("Sản phẩm không tồn tại hoặc đã bị xóa");
             }
 
-            // 2. Lấy danh sách các biến thể để có product_sku (dùng để xóa các option trong site_product_option_price)
-            const variants = await siteProductVariantRepository.findByProductId(product.id);
-            const skus = variants.map(v => v.product_sku);
-
-            // 3. Xóa mềm sản phẩm
+            // 2. Xóa mềm sản phẩm
             await siteProductRepository.softDeleteByGuid(guid, queryRunner);
 
-            // 4. Xóa mềm các biến thể của sản phẩm
+            // 3. Xóa mềm các biến thể của sản phẩm
             await siteProductVariantRepository.softDeleteByProductId(product.id, queryRunner);
 
-            // 5. Xóa mềm các option prices tương ứng theo SKU
-            if (skus.length > 0) {
-                await siteProductOptionPriceRepository.softDeleteBySkus(skus, queryRunner);
-            }
+            // 4. Xóa mềm các option prices tương ứng theo Product ID
+            await siteProductOptionPriceRepository.softDeleteByProductId(product.id, queryRunner);
 
             return true;
         });

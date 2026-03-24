@@ -39,7 +39,8 @@ class SiteProductController extends BaseController {
         return this.handleWithTryCatch(
             async () => {
                 const { productSku } = req.params;
-                const data = await siteProductService.getOptionPricesBySku(productSku);
+                const { siteProductGuid } = req.query as any;
+                const data = await siteProductService.getOptionPricesBySku(productSku, siteProductGuid);
                 return ServiceResponse.success({
                     message: "Lấy danh sách mức giá thành công",
                     data

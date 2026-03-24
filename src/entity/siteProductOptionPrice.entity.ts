@@ -10,6 +10,9 @@ export class SiteProductOptionPrice extends BaseTimeEntity {
     guid: string;
 
     @Column({ nullable: true })
+    site_product_id: number;
+
+    @Column({ nullable: true })
     product_sku: string;
 
     @Column({ nullable: false })

@@ -233,6 +233,12 @@ const siteProductRouter: Router = (() => {
      *         schema:
      *           type: string
      *         description: Product SKU
+     *       - in: query
+     *         name: siteProductGuid
+     *         schema:
+     *           type: string
+     *           format: uuid
+     *         description: GUID của sản phẩm site (tùy chọn để lấy chính xác options của sản phẩm đó)
      *     responses:
      *       200:
      *         description: Thành công
