@@ -15,3 +15,7 @@ export * from "./bizCopiesByBundle.entity";
 export * from "./siteProductVariant.entity";
 export * from "./siteProductOptionPrice.entity";
 export * from "./syncRequest.entity";
+export * from "./order.entity";
+export * from "./orderItem.entity";
+export * from "./orderDetail.entity";
+export * from "./orderStatusHistory.entity";
