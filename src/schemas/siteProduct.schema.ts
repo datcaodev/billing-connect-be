@@ -64,3 +64,9 @@ export const removeDiscountFromOptionsSchema = z.object({
 });
 
 export type IRemoveDiscountFromOptionsRequest = z.infer<typeof removeDiscountFromOptionsSchema>;
+
+export const deleteSiteProductSchema = z.object({
+    guid: z.string({
+        required_error: "Thiếu tham số 'guid'",
+    }).uuid("GUID sản phẩm không hợp lệ"),
+});

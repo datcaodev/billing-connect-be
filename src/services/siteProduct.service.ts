@@ -221,6 +221,37 @@ class SiteProductService extends BaseService {
     }
 
     /**
+     * Xóa mềm sản phẩm (soft delete)
+     * @param guid GUID của sản phẩm cần xóa
+     */
+    public async deleteSiteProduct(guid: string) {
+        return await this.handleWithTransaction(async (queryRunner) => {
+            // 1. Kiểm tra sản phẩm có tồn tại không
+            const product = await siteProductRepository.findByGuid(guid);
+            if (!product) {
+                throw new NotFoundError("Sản phẩm không tồn tại hoặc đã bị xóa");
+            }
+
+            // 2. Lấy danh sách các biến thể để có product_sku (dùng để xóa các option trong site_product_option_price)
+            const variants = await siteProductVariantRepository.findByProductId(product.id);
+            const skus = variants.map(v => v.product_sku);
+
+            // 3. Xóa mềm sản phẩm
+            await siteProductRepository.softDeleteByGuid(guid, queryRunner);
+
+            // 4. Xóa mềm các biến thể của sản phẩm
+            await siteProductVariantRepository.softDeleteByProductId(product.id, queryRunner);
+
+            // 5. Xóa mềm các option prices tương ứng theo SKU
+            if (skus.length > 0) {
+                await siteProductOptionPriceRepository.softDeleteBySkus(skus, queryRunner);
+            }
+
+            return true;
+        });
+    }
+
+    /**
      * Chuyển đổi tên tiếng Việt thành slug (không dấu, gạch ngang)
      */
     private generateSlug(text: string): string {

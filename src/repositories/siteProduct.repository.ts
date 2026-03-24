@@ -17,12 +17,12 @@ class SiteProductRepository extends BaseRespository {
     }
 
     public async findBySlug(slug: string): Promise<SiteProduct | null> {
-        return await this.repository.findOne({ where: { slug } });
+        return await this.repository.findOne({ where: { slug, is_delete: false } });
     }
 
     public async getNextId(): Promise<number> {
         const lastProduct = await this.repository.findOne({
-            where: {},
+            where: { is_delete: false },
             order: { id: "DESC" },
         });
         return (lastProduct?.id || 0) + 1;
@@ -129,6 +129,15 @@ class SiteProductRepository extends BaseRespository {
 
             return rows;
         });
+    }
+
+    public async softDeleteByGuid(guid: string, queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProduct) : this.repository;
+        await repo.update({ guid }, { is_delete: true, status: "inactive" });
+    }
+
+    public async findByGuid(guid: string): Promise<SiteProduct | null> {
+        return await this.repository.findOne({ where: { guid, is_delete: false } });
     }
 }
 

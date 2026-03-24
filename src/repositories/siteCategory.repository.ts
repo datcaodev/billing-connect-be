@@ -9,18 +9,18 @@ class SiteCategoryRepository extends BaseRespository {
 
     public async findByIds(ids: number[]) {
         return await this.repository.find({
-            where: { id: In(ids) }
+            where: { id: In(ids), is_deleted: false }
         });
     }
 
     public async findByGuids(guids: string[]) {
         return await this.repository.find({
-            where: { guid: In(guids) }
+            where: { guid: In(guids), is_deleted: false }
         });
     }
 
     public async findByCode(code: string) {
-        return await this.repository.findOne({ where: { code } });
+        return await this.repository.findOne({ where: { code, is_deleted: false } });
     }
 
     public async findByGuid(guid: string) {

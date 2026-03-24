@@ -1,7 +1,7 @@
 import { AppDataSource } from "../config/database.config";
 import { SiteProductOptionPrice } from "../entity/siteProductOptionPrice.entity";
 import { BaseRespository } from "../core/baseRepositories.core";
-import { QueryRunner } from "typeorm";
+import { QueryRunner, In } from "typeorm";
 
 class SiteProductOptionPriceRepository extends BaseRespository {
     private repository = AppDataSource.getRepository(SiteProductOptionPrice);
@@ -28,7 +28,7 @@ class SiteProductOptionPriceRepository extends BaseRespository {
 
     public async findBySku(sku: string): Promise<SiteProductOptionPrice[]> {
         return await this.repository.find({
-            where: { product_sku: sku },
+            where: { product_sku: sku, is_delete: false },
             order: { copies: "ASC" }
         });
     }
@@ -45,6 +45,7 @@ class SiteProductOptionPriceRepository extends BaseRespository {
                 "spv.name AS spv_name"
             ])
             .andWhere("spv.is_delete = false")
+            .andWhere("op.is_delete = false")
             .orderBy("op.product_sku", "ASC")
             .addOrderBy("op.copies", "ASC");
 
@@ -84,6 +85,14 @@ class SiteProductOptionPriceRepository extends BaseRespository {
             .set({ discount_id: null as any })
             .where("guid IN (:...optionPriceGuids)", { optionPriceGuids })
             .execute();
+    }
+
+    /**
+     * Xóa mềm các option prices theo danh sách SKU
+     */
+    public async softDeleteBySkus(skus: string[], queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
+        await repo.update({ product_sku: In(skus) }, { is_delete: true });
     }
 }
 

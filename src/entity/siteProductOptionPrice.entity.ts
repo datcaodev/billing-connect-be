@@ -23,4 +23,7 @@ export class SiteProductOptionPrice extends BaseTimeEntity {
 
     @Column({ default: 'CN' })
     currency: string;
+
+    @Column({ nullable: true })
+    is_delete: boolean;
 }

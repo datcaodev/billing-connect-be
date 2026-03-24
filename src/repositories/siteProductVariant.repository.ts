@@ -25,6 +25,17 @@ class SiteProductVariantRepository extends BaseRespository {
         const variant = repo.create(data);
         return await repo.save(variant);
     }
+
+    public async findByProductId(productId: number): Promise<SiteProductVariant[]> {
+        return await this.repository.find({
+            where: { site_product_id: productId }
+        });
+    }
+
+    public async softDeleteByProductId(productId: number, queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductVariant) : this.repository;
+        await repo.update({ site_product_id: productId }, { is_delete: true, status: "inactive" });
+    }
 }
 
 export const siteProductVariantRepository = new SiteProductVariantRepository();

@@ -134,6 +134,28 @@ class SiteProductController extends BaseController {
             next
         );
     };
+
+    /**
+     * HTTP handler xóa mềm sản phẩm
+     */
+    public deleteSiteProduct = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const { guid } = req.params;
+                await siteProductService.deleteSiteProduct(guid);
+                return ServiceResponse.success({
+                    message: "Xóa sản phẩm thành công",
+                    data: true
+                });
+            },
+            res,
+            next
+        );
+    };
 }
 
 export const siteProductController = new SiteProductController();

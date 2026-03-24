@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { validateRequest, validateRequestWithForm } from "../middlewares/validateRequest.middleware";
-import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema, removeDiscountFromOptionsSchema } from "../schemas/siteProduct.schema";
+import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema, removeDiscountFromOptionsSchema, deleteSiteProductSchema } from "../schemas/siteProduct.schema";
 import { siteProductController } from "../controllers/siteProduct.controller";
 import multer from "multer";
 
@@ -349,6 +349,43 @@ const siteProductRouter: Router = (() => {
         "/remove-discount",
         validateRequest(removeDiscountFromOptionsSchema, ["body"]),
         siteProductController.removeDiscountFromOptions
+    );
+
+    /**
+     * @swagger
+     * /api/v1/billion-connect/site-product/delete/{guid}:
+     *   post:
+     *     summary: Xóa sản phẩm site (Soft delete)
+     *     tags: [SiteProduct]
+     *     parameters:
+     *       - in: path
+     *         name: guid
+     *         required: true
+     *         schema:
+     *           type: string
+     *           format: uuid
+     *         description: GUID của sản phẩm cần xóa
+     *     responses:
+     *       200:
+     *         description: Thành công
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               example:
+     *                 success: true
+     *                 message: "Xóa sản phẩm thành công"
+     *                 data: true
+     *                 error_code: null
+     *                 code: 200
+     *                 description: "Message is init response"
+     *                 responseCode: 200
+     *                 timestamp: 1710660000000
+     */
+    router.post(
+        "/delete/:guid",
+        validateRequest(deleteSiteProductSchema, ["params"]),
+        siteProductController.deleteSiteProduct
     );
 
     return router;
