@@ -71,3 +71,9 @@ export const deleteSiteProductSchema = z.object({
         required_error: "Thiếu tham số 'guid'",
     }).uuid("GUID sản phẩm không hợp lệ"),
 });
+
+export const getVariantsAndOptionsSchema = z.object({
+    guid: z.string({
+        required_error: "Thiếu tham số 'guid'",
+    }).uuid("GUID sản phẩm không hợp lệ"),
+});

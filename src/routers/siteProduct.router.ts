@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { validateRequest, validateRequestWithForm } from "../middlewares/validateRequest.middleware";
-import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema, removeDiscountFromOptionsSchema, deleteSiteProductSchema } from "../schemas/siteProduct.schema";
+import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema, removeDiscountFromOptionsSchema, deleteSiteProductSchema, getVariantsAndOptionsSchema } from "../schemas/siteProduct.schema";
 import { siteProductController } from "../controllers/siteProduct.controller";
 import multer from "multer";
 
@@ -392,6 +392,58 @@ const siteProductRouter: Router = (() => {
         "/delete/:guid",
         validateRequest(deleteSiteProductSchema, ["params"]),
         siteProductController.deleteSiteProduct
+    );
+
+    /**
+     * @swagger
+     * /api/v1/billion-connect/site-product/variants-and-options/{guid}:
+     *   get:
+     *     summary: Lấy danh sách variants và options (giá) của sản phẩm theo GUID
+     *     tags: [SiteProduct]
+     *     parameters:
+     *       - in: path
+     *         name: guid
+     *         required: true
+     *         schema:
+     *           type: string
+     *           format: uuid
+     *         description: GUID của sản phẩm site
+     *     responses:
+     *       200:
+     *         description: Thành công
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               example:
+     *                 success: true
+     *                 message: "Lấy danh sách variants và options thành công"
+     *                 data:
+     *                   - siteProductId: 1
+     *                     productSku: "JP-10GB-7DAYS"
+     *                     name: "Gói 10GB - 7 Ngày"
+     *                     planType: "daily"
+     *                     options:
+     *                       - guid: "uuid-option-price"
+     *                         copies: 1
+     *                         retailPrice: 250000
+     *                         discount:
+     *                           id: 10
+     *                           guid: "uuid-discount-10"
+     *                           name: "Giảm giá mùa hè"
+     *                           type: "PERCENTAGE"
+     *                           value: 10
+     *                         currency: "CNY"
+     *                 error_code: null
+     *                 code: 200
+     *                 description: "Message is init response"
+     *                 responseCode: 200
+     *                 timestamp: 1710660000000
+     */
+    router.get(
+        "/variants-and-options/:guid",
+        validateRequest(getVariantsAndOptionsSchema, ["params"]),
+        siteProductController.getVariantsAndOptions
     );
 
     return router;

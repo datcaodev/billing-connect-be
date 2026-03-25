@@ -230,6 +230,61 @@ class SiteProductService extends BaseService {
     }
 
     /**
+     * Lấy danh sách variants và options (giá) của sản phẩm theo GUID
+     * @param guid GUID của sản phẩm site
+     */
+    public async getVariantsAndOptionsByProductGuid(guid: string) {
+        return await this.handleWithTryCatch(async () => {
+            const product = await siteProductRepository.findByGuid(guid);
+            if (!product) {
+                throw new NotFoundError("Sản phẩm không tồn tại hoặc đã bị xóa");
+            }
+
+            const rawData = await siteProductVariantRepository.getVariantsAndOptionsByProductId(product.id);
+            if (!rawData || rawData.length === 0) {
+                return [];
+            }
+
+            // Nhóm data theo variant (product_sku)
+            const variantMap = new Map<string, any>();
+
+            for (const item of rawData) {
+                const sku = item.product_sku;
+                if (!variantMap.has(sku)) {
+                    variantMap.set(sku, {
+                        guid: item.guid,
+                        product_sku: sku,
+                        name: item.name,
+                        name_original: item.name_original,
+                        plan_type: item.plan_type,
+                        options: []
+                    });
+                }
+
+                if (item.guid) { // Nếu có option price (do dùng left join)
+                    variantMap.get(sku).options.push({
+                        guid: item.guid,
+                        copies: item.copies,
+                        retail_price: item.retail_price,
+                        currency: item.currency,
+                        discount: item.discount_id ? {
+                            id: item.discount_id,
+                            guid: item.discount_guid,
+                            name: item.discount_name,
+                            type: item.discount_type,
+                            value: item.discount_value
+                        } : null
+                    });
+                }
+            }
+
+            const result = Array.from(variantMap.values());
+            return plainToInstance(SiteProductVariantWithPriceDto, result);
+            // return result
+        });
+    }
+
+    /**
      * Xóa mềm sản phẩm (soft delete)
      * @param guid GUID của sản phẩm cần xóa
      */

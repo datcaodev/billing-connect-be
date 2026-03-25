@@ -162,6 +162,28 @@ class SiteProductController extends BaseController {
             next
         );
     };
+
+    /**
+     * HTTP handler lấy danh sách variants và options của sản phẩm
+     */
+    public getVariantsAndOptions = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const { guid } = req.params;
+                const data = await siteProductService.getVariantsAndOptionsByProductGuid(guid);
+                return ServiceResponse.success({
+                    message: "Lấy danh sách variants và options thành công",
+                    data
+                });
+            },
+            res,
+            next
+        );
+    };
 }
 
 export const siteProductController = new SiteProductController();

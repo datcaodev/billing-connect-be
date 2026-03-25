@@ -51,19 +51,32 @@ export class SiteProductPaginationDto {
 }
 
 @Exclude()
+export class DiscountSimpleDto {
+    // @Expose() id: number;
+    @Expose() guid: string;
+    @Expose() name: string;
+    @Expose() type: string;
+    @Expose() value: number;
+}
+
+@Exclude()
 export class SiteProductOptionPriceSimpleDto {
     @Expose() guid: string;
     @Expose() copies: number;
     @Expose({ name: "retail_price" }) retailPrice: number;
-    @Expose({ name: "final_price" }) finalPrice: number;
     @Expose() currency: string;
+
+    @Expose()
+    @Type(() => DiscountSimpleDto)
+    discount: DiscountSimpleDto;
 }
 
 @Exclude()
 export class SiteProductVariantWithPriceDto {
-    @Expose({ name: "site_product_id" }) siteProductId: number;
+    @Expose() guid: string;
     @Expose({ name: "product_sku" }) productSku: string;
     @Expose() name: string;
+    @Expose({ name: "name_original" }) nameOriginal: string;
     @Expose({ name: "plan_type" }) planType: string;
 
     @Expose()
