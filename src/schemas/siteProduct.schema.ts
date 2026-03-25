@@ -8,7 +8,7 @@ export const siteProductSchema = z.object({
     }).min(1, "Tên sản phẩm không được để trống"),
     desc: z.string().nullable(),
     imageUrl: z.string().nullable().optional(),
-    categoryGuids: z.array(z.string()).min(1, "Sản phẩm phải thuộc ít nhất một danh mục"),
+    categoryGuids: z.array(z.string()).min(1, "Sản phẩm phải thuộc ít nhất một danh mục").nullable(),
     areaGuid: z.string().nullable(),
     variants: z.array(z.object({
         productSku: z.string({

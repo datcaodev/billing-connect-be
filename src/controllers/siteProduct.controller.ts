@@ -5,6 +5,7 @@ import { ServiceResponse } from "../core/serviceResponse.core";
 import { uploadToCloudinary } from "../utils/cloudinary.util";
 import { AuthenticatedRequest } from "../types";
 import { ISearchVariantsByDiscountRequest } from "../schemas/siteProduct.schema";
+import { ConflictError } from "../utils/errors/ConflictError.error";
 
 class SiteProductController extends BaseController {
     /**
@@ -79,6 +80,10 @@ class SiteProductController extends BaseController {
     public createSiteProduct = async (req: Request, res: Response, next: NextFunction) => {
         return await this.handleWithTryCatch(async () => {
             let data = req.body;
+
+            if (!data.categoryGuids && data.areaGuid) {
+                throw new ConflictError("Sản phẩm phải thuộc ít nhất một vùng hoặc một quốc gia");
+            }
 
             // Parse nested objects if they come as strings (common when using multipart/form-data)
             if (typeof data.variants === 'string') {
