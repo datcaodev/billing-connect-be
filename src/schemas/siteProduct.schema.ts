@@ -77,3 +77,27 @@ export const getVariantsAndOptionsSchema = z.object({
         required_error: "Thiếu tham số 'guid'",
     }).uuid("GUID sản phẩm không hợp lệ"),
 });
+export const updateSiteProductSchema = z.object({
+    name: z.string().min(1, "Tên sản phẩm không được để trống").optional(),
+    desc: z.string().nullable().optional(),
+    variants: z.array(z.object({
+        guid: z.string().uuid("GUID biến thể không hợp lệ").optional(),
+        productSku: z.string({
+            required_error: "Thiếu tham số bắt buộc: 'productSku'",
+        }),
+        highFlowSize: z.string().optional(),
+        planType: z.string().optional(),
+        name: z.string().optional(),
+        options: z.array(z.object({
+            guid: z.string().uuid("GUID tùy chọn không hợp lệ").optional(),
+            copies: z.number({
+                required_error: "Thiếu tham số bắt buộc: 'copies'",
+            }),
+            retail_price: z.number().optional(),
+            currency: z.string().optional(),
+            discountGuid: z.string().uuid("GUID giảm giá không hợp lệ").nullable().optional(),
+        })).optional(),
+    })).optional()
+});
+
+export type IUpdateSiteProductRequest = z.infer<typeof updateSiteProductSchema>;

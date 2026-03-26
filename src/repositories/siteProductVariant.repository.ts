@@ -43,6 +43,7 @@ class SiteProductVariantRepository extends BaseRespository {
         return this.handleWithTryCatch(async () => {
             const rows = await this.repository.createQueryBuilder("variant")
                 .select([
+                    'variant.guid AS "variant_guid"',
                     'variant.site_product_id AS "site_product_id"',
                     'variant.product_sku AS "product_sku"',
                     'variant.name AS "name"',
@@ -68,6 +69,16 @@ class SiteProductVariantRepository extends BaseRespository {
 
             return rows;
         });
+    }
+
+    public async softDeleteBySku(productId: number, productSku: string, queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductVariant) : this.repository;
+        await repo.update({ site_product_id: productId, product_sku: productSku }, { is_delete: true, status: "inactive" });
+    }
+
+    public async hardDeleteByProductId(productId: number, queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductVariant) : this.repository;
+        await repo.delete({ site_product_id: productId });
     }
 }
 

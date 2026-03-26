@@ -184,6 +184,41 @@ class SiteProductController extends BaseController {
             next
         );
     };
+
+    /**
+     * HTTP handler cập nhật thông tin sản phẩm và đồng bộ hóa các gói (variants) và tùy chọn (options)
+     */
+    public updateSiteProduct = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const { guid } = req.params;
+                let data = req.body;
+
+                // Parse nested objects if they come as strings (common when using multipart/form-data)
+                if (typeof data.variants === 'string') {
+                    data.variants = JSON.parse(data.variants);
+                }
+
+                // Xử lý upload ảnh lên Cloudinary nếu có file đính kèm
+                if (req.file) {
+                    const imageUrl = await uploadToCloudinary(req.file);
+                    data.imageUrl = imageUrl;
+                }
+
+                const result = await siteProductService.updateSiteProduct(guid, data);
+                return ServiceResponse.success({
+                    message: "Cập nhật sản phẩm và đồng bộ hóa thành công",
+                    data: result
+                });
+            },
+            res,
+            next
+        );
+    };
 }
 
 export const siteProductController = new SiteProductController();

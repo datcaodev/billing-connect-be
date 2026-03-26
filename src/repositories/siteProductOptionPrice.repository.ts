@@ -107,6 +107,27 @@ class SiteProductOptionPriceRepository extends BaseRespository {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
         await repo.update({ site_product_id: productId }, { is_delete: true });
     }
+
+    public async softDeleteBySku(productId: number, productSku: string, queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
+        await repo.update({ site_product_id: productId, product_sku: productSku }, { is_delete: true });
+    }
+
+    public async softDeleteByCopies(productId: number, productSku: string, copies: number, queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
+        await repo.update({ site_product_id: productId, product_sku: productSku, copies }, { is_delete: true });
+    }
+
+    public async findByVariantSku(productId: number, productSku: string): Promise<SiteProductOptionPrice[]> {
+        return await this.repository.find({
+            where: { site_product_id: productId, product_sku: productSku, is_delete: false }
+        });
+    }
+
+    public async hardDeleteByProductId(productId: number, queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
+        await repo.delete({ site_product_id: productId });
+    }
 }
 
 export const siteProductOptionPriceRepository = new SiteProductOptionPriceRepository();

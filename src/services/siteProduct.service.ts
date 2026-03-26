@@ -7,7 +7,7 @@ import { siteCategoryRepository } from "../repositories/siteCategory.repository"
 import { exchangeRateRepository } from "../repositories/exchangeRate.repository";
 import { copiesByBundleRepository } from "../repositories/copiesByBundle.repository";
 import { discountRepository } from "../repositories/discount.repository";
-import { ISiteProductRequest, ISearchVariantsByDiscountRequest, IRemoveDiscountFromOptionsRequest } from "../schemas/siteProduct.schema";
+import { ISiteProductRequest, ISearchVariantsByDiscountRequest, IRemoveDiscountFromOptionsRequest, IUpdateSiteProductRequest } from "../schemas/siteProduct.schema";
 import { v4 as uuidv4 } from 'uuid';
 import { AppError } from "../utils/errors/AppError.error";
 import { ErrorCode } from "../enums/error.enum";
@@ -252,7 +252,7 @@ class SiteProductService extends BaseService {
                 const sku = item.product_sku;
                 if (!variantMap.has(sku)) {
                     variantMap.set(sku, {
-                        guid: item.guid,
+                        guid: item.variant_guid,
                         product_sku: sku,
                         name: item.name,
                         name_original: item.name_original,
@@ -281,6 +281,79 @@ class SiteProductService extends BaseService {
             const result = Array.from(variantMap.values());
             return plainToInstance(SiteProductVariantWithPriceDto, result);
             // return result
+        });
+    }
+
+    /**
+     * Cập nhật thông tin sản phẩm và đồng bộ hóa các gói (variants) và tùy chọn (options)
+     * @param productGuid GUID của sản phẩm cần cập nhật
+     * @param data Dữ liệu cập nhật
+     */
+    public async updateSiteProduct(productGuid: string, data: IUpdateSiteProductRequest & { imageUrl?: string | null }) {
+        return await this.handleWithTransaction(async (queryRunner) => {
+            // 1. Kiểm tra sản phẩm
+            const product = await siteProductRepository.findByGuid(productGuid);
+            if (!product) {
+                throw new NotFoundError("Sản phẩm không tồn tại hoặc đã bị xóa");
+            }
+
+            // 2. Cập nhật thông tin cơ bản của sản phẩm
+            const updateFields: any = {};
+            if (data.name) {
+                updateFields.name = data.name;
+                updateFields.slug = this.generateSlug(data.name);
+            }
+            if (data.desc !== undefined) updateFields.desc = data.desc;
+            if (data.imageUrl !== undefined) updateFields.image_url = data.imageUrl;
+
+            if (Object.keys(updateFields).length > 0) {
+                await siteProductRepository.updateByGuid(productGuid, updateFields, queryRunner);
+            }
+
+            // 3. Đồng bộ hóa Variants và Options (Xóa hết insert lại - Xóa cứng)
+            if (data.variants) {
+                // Xóa cứng tất cả variants hiện tại của sản phẩm
+                await siteProductVariantRepository.hardDeleteByProductId(product.id, queryRunner);
+                // Xóa cứng tất cả option prices hiện tại của sản phẩm
+                await siteProductOptionPriceRepository.hardDeleteByProductId(product.id, queryRunner);
+
+                // Insert lại từ đầu các variant và option trong request
+                for (const variantData of data.variants) {
+                    await siteProductVariantRepository.upsertVariant({
+                        site_product_id: product.id,
+                        product_sku: variantData.productSku,
+                        name: renderPlanName(variantData.highFlowSize, variantData.planType) || variantData.name,
+                        status: 'active',
+                        is_delete: false, // Reactivate
+                        name_original: variantData.name,
+                        plan_type: variantData.planType
+                    }, queryRunner);
+
+                    if (variantData.options) {
+                        for (const optionData of variantData.options) {
+                            let discountId = null;
+                            if (optionData.discountGuid) {
+                                const discount = await discountRepository.findByGuid(optionData.discountGuid);
+                                if (discount) {
+                                    discountId = discount.id;
+                                }
+                            }
+
+                            await siteProductOptionPriceRepository.upsertOptionPrice({
+                                site_product_id: product.id,
+                                product_sku: variantData.productSku,
+                                copies: optionData.copies,
+                                retail_price: optionData.retail_price,
+                                currency: optionData.currency || 'CNY',
+                                discount_id: discountId,
+                                is_delete: false // Reactivate
+                            }, queryRunner);
+                        }
+                    }
+                }
+            }
+
+            return true;
         });
     }
 

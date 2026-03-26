@@ -139,6 +139,11 @@ class SiteProductRepository extends BaseRespository {
     public async findByGuid(guid: string): Promise<SiteProduct | null> {
         return await this.repository.findOne({ where: { guid, is_delete: false } });
     }
+
+    public async updateByGuid(guid: string, data: Partial<SiteProduct>, queryRunner?: QueryRunner): Promise<void> {
+        const repo = queryRunner ? queryRunner.manager.getRepository(SiteProduct) : this.repository;
+        await repo.update({ guid }, data);
+    }
 }
 
 export const siteProductRepository = new SiteProductRepository();

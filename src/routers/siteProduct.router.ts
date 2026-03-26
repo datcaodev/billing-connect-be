@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { validateRequest, validateRequestWithForm } from "../middlewares/validateRequest.middleware";
-import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema, removeDiscountFromOptionsSchema, deleteSiteProductSchema, getVariantsAndOptionsSchema } from "../schemas/siteProduct.schema";
+import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema, removeDiscountFromOptionsSchema, deleteSiteProductSchema, getVariantsAndOptionsSchema, updateSiteProductSchema } from "../schemas/siteProduct.schema";
 import { siteProductController } from "../controllers/siteProduct.controller";
 import multer from "multer";
 
@@ -444,6 +444,94 @@ const siteProductRouter: Router = (() => {
         "/variants-and-options/:guid",
         validateRequest(getVariantsAndOptionsSchema, ["params"]),
         siteProductController.getVariantsAndOptions
+    );
+
+    /**
+     * @swagger
+     * /api/v1/billion-connect/site-product/update/{guid}:
+     *   patch:
+     *     tags:
+     *       - Site Product (Billion Connect)
+     *     summary: Cập nhật và đồng bộ hóa sản phẩm (Variants & Options)
+     *     description: "API hiệu chỉnh sản phẩm theo cơ chế Diff-Sync: thêm mới, cập nhật hoặc xóa mềm các gói (variants) và tùy chọn (options) dựa trên danh sách gửi lên. Lưu ý: Không cập nhật category/area. Hỗ trợ upload ảnh mới qua field 'image'."
+     *     parameters:
+     *       - in: path
+     *         name: guid
+     *         required: true
+     *         schema:
+     *           type: string
+     *           format: uuid
+     *         description: GUID của sản phẩm
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         multipart/form-data:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               name:
+     *                 type: string
+     *                 example: "Sim Du Lịch Nhật Bản (Updated)"
+     *               desc:
+     *                 type: string
+     *                 example: "Mô tả mới"
+     *               image:
+     *                 type: string
+     *                 format: binary
+     *               variants:
+     *                 type: array
+     *                 items:
+     *                   type: object
+     *                   properties:
+     *                     guid:
+     *                       type: string
+     *                       format: uuid
+     *                       example: "uuid-variant-1"
+     *                     productSku:
+     *                       type: string
+     *                       example: "JP-10GB-7DAYS"
+     *                     highFlowSize:
+     *                       type: string
+     *                       example: "10485760"
+     *                     planType:
+     *                       type: string
+     *                       example: "1"
+     *                     name:
+     *                       type: string
+     *                       example: "Gói 10GB - 7 Ngày"
+     *                     options:
+     *                       type: array
+     *                       items:
+     *                         type: object
+     *                         properties:
+     *                           guid:
+     *                             type: string
+     *                             format: uuid
+     *                             example: "uuid-option-1"
+     *                           copies:
+     *                             type: number
+     *                             example: 1
+     *                           retail_price:
+     *                             type: number
+     *                             example: 10.5
+     *                           currency:
+     *                             type: string
+     *                             example: "USD"
+     *                           discountGuid:
+     *                             type: string
+     *                             nullable: true
+     *                             example: "uuid-discount-summer"
+     *     responses:
+     *       200:
+     *         description: Cập nhật và đồng bộ hóa thành công
+     *       404:
+     *         description: Không tìm thấy sản phẩm
+     */
+    router.patch(
+        "/update/:guid",
+        upload.single("image"),
+        validateRequestWithForm(updateSiteProductSchema, ["body"]),
+        siteProductController.updateSiteProduct
     );
 
     return router;
