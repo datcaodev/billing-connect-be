@@ -28,7 +28,7 @@ class SiteProductOptionPriceRepository extends BaseRespository {
     }
 
     public async findBySku(sku: string, productId?: number): Promise<SiteProductOptionPrice[]> {
-        const where: any = { product_sku: sku, is_delete: false };
+        const where: any = { product_sku: sku, is_deleted: false };
         if (productId) {
             where.site_product_id = productId;
         }
@@ -49,8 +49,8 @@ class SiteProductOptionPriceRepository extends BaseRespository {
                 "op.currency AS op_currency",
                 "spv.name AS spv_name"
             ])
-            .andWhere("spv.is_delete = false")
-            .andWhere("op.is_delete = false")
+            .andWhere("spv.is_deleted = false")
+            .andWhere("op.is_deleted = false")
             .orderBy("op.product_sku", "ASC")
             .addOrderBy("op.copies", "ASC");
 
@@ -97,7 +97,7 @@ class SiteProductOptionPriceRepository extends BaseRespository {
      */
     public async softDeleteBySkus(skus: string[], queryRunner?: QueryRunner): Promise<void> {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
-        await repo.update({ product_sku: In(skus) }, { is_delete: true });
+        await repo.update({ product_sku: In(skus) }, { is_deleted: true });
     }
 
     /**
@@ -105,22 +105,22 @@ class SiteProductOptionPriceRepository extends BaseRespository {
      */
     public async softDeleteByProductId(productId: number, queryRunner?: QueryRunner): Promise<void> {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
-        await repo.update({ site_product_id: productId }, { is_delete: true });
+        await repo.update({ site_product_id: productId }, { is_deleted: true });
     }
 
     public async softDeleteBySku(productId: number, productSku: string, queryRunner?: QueryRunner): Promise<void> {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
-        await repo.update({ site_product_id: productId, product_sku: productSku }, { is_delete: true });
+        await repo.update({ site_product_id: productId, product_sku: productSku }, { is_deleted: true });
     }
 
     public async softDeleteByCopies(productId: number, productSku: string, copies: number, queryRunner?: QueryRunner): Promise<void> {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductOptionPrice) : this.repository;
-        await repo.update({ site_product_id: productId, product_sku: productSku, copies }, { is_delete: true });
+        await repo.update({ site_product_id: productId, product_sku: productSku, copies }, { is_deleted: true });
     }
 
     public async findByVariantSku(productId: number, productSku: string): Promise<SiteProductOptionPrice[]> {
         return await this.repository.find({
-            where: { site_product_id: productId, product_sku: productSku, is_delete: false }
+            where: { site_product_id: productId, product_sku: productSku, is_deleted: false }
         });
     }
 

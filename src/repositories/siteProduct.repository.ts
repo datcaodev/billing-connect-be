@@ -17,12 +17,12 @@ class SiteProductRepository extends BaseRespository {
     }
 
     public async findBySlug(slug: string): Promise<SiteProduct | null> {
-        return await this.repository.findOne({ where: { slug, is_delete: false } });
+        return await this.repository.findOne({ where: { slug, is_deleted: false } });
     }
 
     public async getNextId(): Promise<number> {
         const lastProduct = await this.repository.findOne({
-            where: { is_delete: false },
+            where: { is_deleted: false },
             order: { id: "DESC" },
         });
         return (lastProduct?.id || 0) + 1;
@@ -39,7 +39,7 @@ class SiteProductRepository extends BaseRespository {
                 .leftJoinAndMapOne("mapping.category", "site_categories", "category", "category.id = mapping.category_id")
                 .leftJoinAndMapOne("category.parentCategory", "site_categories", "parent", "parent.id = category.parent")
                 .where("1 = 1")
-                .andWhere("product.is_delete = false");
+                .andWhere("product.is_deleted = false");
 
             if (name) {
                 qb.andWhere("product.name ILIKE :name", { name: `%${name}%` });
@@ -124,7 +124,7 @@ class SiteProductRepository extends BaseRespository {
                 .innerJoin("site_product_option_price", "spop", "spop.product_sku = variant.product_sku")
                 .innerJoin("site_discounts", "discount", "discount.id = spop.discount_id")
                 .where("discount.guid = :discountGuid", { discountGuid })
-                .andWhere("variant.is_delete = false")
+                .andWhere("variant.is_deleted = false")
                 .getRawMany();
 
             return rows;
@@ -133,11 +133,11 @@ class SiteProductRepository extends BaseRespository {
 
     public async softDeleteByGuid(guid: string, queryRunner?: QueryRunner): Promise<void> {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProduct) : this.repository;
-        await repo.update({ guid }, { is_delete: true, status: "inactive" });
+        await repo.update({ guid }, { is_deleted: true, status: "inactive" });
     }
 
     public async findByGuid(guid: string): Promise<SiteProduct | null> {
-        return await this.repository.findOne({ where: { guid, is_delete: false } });
+        return await this.repository.findOne({ where: { guid, is_deleted: false } });
     }
 
     public async updateByGuid(guid: string, data: Partial<SiteProduct>, queryRunner?: QueryRunner): Promise<void> {

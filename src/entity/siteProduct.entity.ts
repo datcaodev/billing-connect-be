@@ -24,9 +24,6 @@ export class SiteProduct extends BaseTimeEntity {
     @Column({ nullable: true })
     status: string;
 
-    @Column({ nullable: true })
-    is_delete: boolean;
-
     @Column({ unique: true, nullable: true })
     slug: string;
 }

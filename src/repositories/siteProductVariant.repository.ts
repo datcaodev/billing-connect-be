@@ -36,7 +36,7 @@ class SiteProductVariantRepository extends BaseRespository {
 
     public async softDeleteByProductId(productId: number, queryRunner?: QueryRunner): Promise<void> {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductVariant) : this.repository;
-        await repo.update({ site_product_id: productId }, { is_delete: true, status: "inactive" });
+        await repo.update({ site_product_id: productId }, { is_deleted: true, status: "inactive" });
     }
 
     public async getVariantsAndOptionsByProductId(productId: number) {
@@ -62,8 +62,8 @@ class SiteProductVariantRepository extends BaseRespository {
                 .leftJoin(SiteProductOptionPrice, "spop", "spop.product_sku = variant.product_sku AND spop.site_product_id = variant.site_product_id")
                 .leftJoin(SiteDiscount, "discount", "discount.id = spop.discount_id")
                 .where("variant.site_product_id = :productId", { productId })
-                .andWhere("(variant.is_delete = false OR variant.is_delete IS NULL)")
-                .andWhere("(spop.is_delete = false OR spop.is_delete IS NULL)")
+                .andWhere("(variant.is_deleted = false OR variant.is_deleted IS NULL)")
+                .andWhere("(spop.is_deleted = false OR spop.is_deleted IS NULL)")
                 .addOrderBy("spop.copies", "ASC")
                 .getRawMany();
 
@@ -73,7 +73,7 @@ class SiteProductVariantRepository extends BaseRespository {
 
     public async softDeleteBySku(productId: number, productSku: string, queryRunner?: QueryRunner): Promise<void> {
         const repo = queryRunner ? queryRunner.manager.getRepository(SiteProductVariant) : this.repository;
-        await repo.update({ site_product_id: productId, product_sku: productSku }, { is_delete: true, status: "inactive" });
+        await repo.update({ site_product_id: productId, product_sku: productSku }, { is_deleted: true, status: "inactive" });
     }
 
     public async hardDeleteByProductId(productId: number, queryRunner?: QueryRunner): Promise<void> {

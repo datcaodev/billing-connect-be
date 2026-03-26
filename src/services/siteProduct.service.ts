@@ -45,7 +45,7 @@ class SiteProductService extends BaseService {
                 image_url: imageUrl, // Mapping camelCase to snake_case entity field
                 type: 'esim', // Mặc định là esim
                 status: 'active', // Trạng thái mặc định là active
-                is_delete: false,
+                is_deleted: false,
                 slug
             }, queryRunner);
 
@@ -65,7 +65,7 @@ class SiteProductService extends BaseService {
                     product_sku: variantData.productSku,
                     name: renderPlanName(variantData.highFlowSize, variantData.planType) || variantData.name,
                     status: 'active',
-                    is_delete: false,
+                    is_deleted: false,
                     name_original: variantData.name,
                     plan_type: variantData.planType
                 }, queryRunner);
@@ -324,7 +324,7 @@ class SiteProductService extends BaseService {
                         product_sku: variantData.productSku,
                         name: renderPlanName(variantData.highFlowSize, variantData.planType) || variantData.name,
                         status: 'active',
-                        is_delete: false, // Reactivate
+                        is_deleted: false, // Reactivate
                         name_original: variantData.name,
                         plan_type: variantData.planType
                     }, queryRunner);
@@ -346,7 +346,7 @@ class SiteProductService extends BaseService {
                                 retail_price: optionData.retail_price,
                                 currency: optionData.currency || 'CNY',
                                 discount_id: discountId,
-                                is_delete: false // Reactivate
+                                is_deleted: false // Reactivate
                             }, queryRunner);
                         }
                     }
