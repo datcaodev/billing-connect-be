@@ -20,4 +20,8 @@ __exportStar(require("./agency.controller"), exports);
 __exportStar(require("./billionProduct.controller"), exports);
 __exportStar(require("./agencyPrice.controller"), exports);
 __exportStar(require("./siteCategory.controller"), exports);
+__exportStar(require("./sync.controller"), exports);
+__exportStar(require("./order.controller"), exports);
+__exportStar(require("./discount.controller"), exports);
+__exportStar(require("./siteProduct.controller"), exports);
 //# sourceMappingURL=index.js.map

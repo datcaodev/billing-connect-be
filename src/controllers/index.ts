@@ -4,4 +4,7 @@ export * from "./agency.controller";
 export * from "./billionProduct.controller";
 export * from "./agencyPrice.controller";
 export * from "./siteCategory.controller";
-
+export * from "./sync.controller";
+export * from "./order.controller";
+export * from "./discount.controller";
+export * from "./siteProduct.controller";

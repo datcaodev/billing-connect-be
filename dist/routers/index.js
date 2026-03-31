@@ -15,6 +15,7 @@ const discount_router_1 = __importDefault(require("./discount.router"));
 const siteProduct_router_1 = require("./siteProduct.router");
 const siteCategory_router_1 = __importDefault(require("./siteCategory.router"));
 const order_router_1 = __importDefault(require("./order.router"));
+const sync_router_1 = __importDefault(require("./sync.router"));
 const appRouter = (0, express_1.default)();
 const routers = [
     { path: "/docs", router: swaggerApi_router_1.default },
@@ -26,6 +27,7 @@ const routers = [
     { path: "/site-product", router: siteProduct_router_1.siteProductRouter },
     { path: "/category", router: siteCategory_router_1.default },
     { path: "/order", router: order_router_1.default },
+    { path: "/sync", router: sync_router_1.default },
 ];
 routers.forEach(({ path, router }) => {
     appRouter.use(`/api/v1/billion-connect${path}`, router);

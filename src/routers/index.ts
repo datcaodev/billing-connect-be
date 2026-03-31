@@ -10,6 +10,7 @@ import discountRouter from "./discount.router";
 import { siteProductRouter } from "./siteProduct.router";
 import siteCategoryRouter from "./siteCategory.router";
 import orderRouter from "./order.router";
+import syncRouter from "./sync.router";
 
 const appRouter: Express = express();
 
@@ -23,6 +24,7 @@ const routers = [
   { path: "/site-product", router: siteProductRouter },
   { path: "/category", router: siteCategoryRouter },
   { path: "/order", router: orderRouter },
+  { path: "/sync", router: syncRouter },
 ];
 
 routers.forEach(({ path, router }) => {

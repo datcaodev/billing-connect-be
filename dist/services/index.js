@@ -21,4 +21,5 @@ __exportStar(require("./agencyPrice.service"), exports);
 __exportStar(require("./exchangeRate.service"), exports);
 __exportStar(require("./discount.service"), exports);
 __exportStar(require("./siteProduct.service"), exports);
+__exportStar(require("./sync.service"), exports);
 //# sourceMappingURL=index.js.map
