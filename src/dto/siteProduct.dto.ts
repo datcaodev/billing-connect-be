@@ -37,6 +37,7 @@ export class SiteProductPaginationDto {
     @Expose() type: string;
     @Expose() status: string;
     @Expose({ name: "image_url" }) imageUrl: string;
+    @Expose() desc: string;
     @Expose() slug: string;
     @Expose({ name: "created_at" }) createdAt: string;
     @Expose({ name: "updated_at" }) updatedAt: string;
