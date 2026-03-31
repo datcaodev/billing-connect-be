@@ -144,13 +144,33 @@ class SiteProductService extends BaseService {
             const rate = rateData && rateData.rate ? new Decimal(rateData.rate) : new Decimal(1);
 
             const transformedPrices = prices.map(price => {
-                const originalPrice = price.retail_price;
-                const finalPrice = new Decimal(originalPrice || 0).mul(rate).toString();
+                const originalPriceDec = new Decimal(price.retail_price || 0).mul(rate);
+                let finalPriceDec = originalPriceDec;
+
+                const discount = (price as any).discount;
+
+                if (discount && discount.status === 'active') {
+                    if (discount.type === 'PERCENTAGE') {
+                        const discountPercent = new Decimal(discount.value).div(100);
+                        finalPriceDec = finalPriceDec.mul(new Decimal(1).minus(discountPercent));
+                    } else if (discount.type === 'FIXED') {
+                        finalPriceDec = finalPriceDec.minus(discount.value);
+                        if (finalPriceDec.isNegative()) {
+                            finalPriceDec = new Decimal(0);
+                        }
+                    }
+                }
 
                 return {
                     ...price,
-                    originalPrice,
-                    finalPrice
+                    original_rice: originalPriceDec.toString(),
+                    final_price: finalPriceDec.toString(),
+                    discount: discount ? {
+                        guid: discount.guid,
+                        name: discount.name,
+                        type: discount.type,
+                        value: discount.value,
+                    } : null
                 };
             });
 

@@ -1,5 +1,6 @@
 import { AppDataSource } from "../config/database.config";
 import { SiteProductOptionPrice } from "../entity/siteProductOptionPrice.entity";
+import { SiteDiscount } from "../entity/siteDiscounts.entity";
 import { BaseRespository } from "../core/baseRepositories.core";
 import { QueryRunner, In } from "typeorm";
 
@@ -28,14 +29,16 @@ class SiteProductOptionPriceRepository extends BaseRespository {
     }
 
     public async findBySku(sku: string, productId?: number): Promise<SiteProductOptionPrice[]> {
-        const where: any = { product_sku: sku, is_deleted: false };
+        const qb = this.repository.createQueryBuilder("op")
+            .leftJoinAndMapOne("op.discount", SiteDiscount, "discount", "discount.id = op.discount_id")
+            .where("op.product_sku = :sku", { sku })
+            .andWhere("op.is_deleted = false");
+
         if (productId) {
-            where.site_product_id = productId;
+            qb.andWhere("op.site_product_id = :productId", { productId });
         }
-        return await this.repository.find({
-            where,
-            order: { copies: "ASC" }
-        });
+
+        return await qb.orderBy("op.copies", "ASC").getMany();
     }
     public async findVariantsByDiscount(discountId: number) {
         const qb = this.repository.createQueryBuilder("op")

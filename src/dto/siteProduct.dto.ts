@@ -13,13 +13,27 @@ export class CategoryDto {
 }
 
 @Exclude()
+export class DiscountSimpleDto {
+    // @Expose() id: number;
+    @Expose() guid: string;
+    @Expose() name: string;
+    @Expose() type: string;
+    @Expose() value: number;
+}
+
+@Exclude()
 export class SiteProductOptionPriceDto {
     @Expose() guid: string;
     @Expose({ name: "product_sku" }) productSku: string;
     @Expose() copies: number;
-    @Expose({ name: "original_price" }) originalPrice: number;
-    @Expose({ name: "final_price" }) finalPrice: number;
+    @Expose({ name: "retail_price" }) retailPrice: number;
+    @Expose({ name: "original_price" }) originalPrice: string;
+    @Expose({ name: "final_price" }) finalPrice: string;
     @Expose() currency: string;
+
+    @Expose()
+    @Type(() => DiscountSimpleDto)
+    discount: DiscountSimpleDto;
 }
 
 @Exclude()
@@ -49,15 +63,6 @@ export class SiteProductPaginationDto {
     @Expose()
     @Type(() => CategoryDto)
     categories: CategoryDto[];
-}
-
-@Exclude()
-export class DiscountSimpleDto {
-    // @Expose() id: number;
-    @Expose() guid: string;
-    @Expose() name: string;
-    @Expose() type: string;
-    @Expose() value: number;
 }
 
 @Exclude()
