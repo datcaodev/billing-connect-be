@@ -81,9 +81,9 @@ class SiteProductController extends BaseController {
         return await this.handleWithTryCatch(async () => {
             let data = req.body;
 
-            if (!data.categoryGuids && data.areaGuid) {
-                throw new ConflictError("Sản phẩm phải thuộc ít nhất một vùng hoặc một quốc gia");
-            }
+            // if (!data.categoryGuids && data.areaGuid) {
+            //     throw new ConflictError("Sản phẩm phải thuộc ít nhất một vùng hoặc một quốc gia");
+            // }
 
             // Parse nested objects if they come as strings (common when using multipart/form-data)
             if (typeof data.variants === 'string') {

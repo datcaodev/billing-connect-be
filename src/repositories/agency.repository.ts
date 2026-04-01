@@ -5,12 +5,12 @@ class AgencyRepository {
     private repository = AppDataSource.getRepository(BizAgency);
 
     public async checkExistCode(code: string): Promise<boolean> {
-        const count = await this.repository.count({ where: { code, is_deleted: false } });
+        const count = await this.repository.count({ where: { code } });
         return count > 0;
     }
 
     public async checkExistEmail(email: string): Promise<boolean> {
-        const count = await this.repository.count({ where: { email, is_deleted: false } });
+        const count = await this.repository.count({ where: { email } });
         return count > 0;
     }
 
