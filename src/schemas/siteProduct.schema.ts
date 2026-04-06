@@ -9,7 +9,7 @@ export const siteProductSchema = z.object({
     desc: z.string().nullable(),
     imageUrl: z.string().nullable().optional(),
     categoryGuids: z.array(z.string()).nullable().optional(),
-    areaGuid: z.string().nullable(),
+    areaGuid: z.string().nullable().optional(),
     variants: z.array(z.object({
         productSku: z.string({
             required_error: "Thiếu tham số bắt buộc: 'productSku'",

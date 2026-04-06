@@ -3,6 +3,7 @@ import { BillionProduct } from "../entity/billionProduct.entity";
 import { BillionProductCountry } from "../entity/billionProductCountry.entity";
 import { BaseRespository } from "../core/baseRepositories.core";
 import { ISearchBillionProduct } from "../schemas";
+import { CommodityType } from "../enums";
 
 class BillionProductRepository extends BaseRespository {
     public async searchProducts(data: ISearchBillionProduct, pagination: any) {
@@ -13,7 +14,8 @@ class BillionProductRepository extends BaseRespository {
             const repository = AppDataSource.getRepository(BillionProduct);
             const qb = repository.createQueryBuilder("product")
                 .leftJoinAndMapMany("product.prices", "billion_product_prices", "prices", "prices.product_sku = product.sku_id")
-                .where("1 = 1");
+                .where("1 = 1")
+                .andWhere(`product.type IN ('${CommodityType.ESIM}', '${CommodityType.ESIM_AIR}', '${CommodityType.ESIM_SELF_SELECTED_PLAN}', '${CommodityType.ESIM_FIXED_PLAN}')`);
 
             if (skuId) {
                 qb.andWhere("product.sku_id ILIKE :skuId", { skuId: `%${skuId}%` });

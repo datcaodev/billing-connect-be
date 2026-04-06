@@ -9,7 +9,7 @@ export class SiteDiscount extends BaseTimeEntity {
     @Column({ type: "uuid", unique: true, nullable: true, default: () => "gen_random_uuid()" })
     guid: string;
 
-    @Column({ length: 255, unique: true, nullable: false })
+    @Column({ length: 255, unique: true, nullable: true })
     name: string;
 
     @Column({ length: 10, nullable: false })
