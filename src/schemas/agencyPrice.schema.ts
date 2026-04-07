@@ -16,6 +16,7 @@ export const agencyPriceSchema = z.object({
     remark: z.string({
         invalid_type_error: "Sai kiểu dữ liệu: 'remark' phải là String",
     }).optional(),
+    all: z.boolean().optional(),
     packages: z.array(z.object({
         skuId: z.string(),
         type: z.string(),
@@ -28,7 +29,7 @@ export const agencyPriceSchema = z.object({
             retailPrice: z.string(),
             settlementPrice: z.string(),
         })),
-    })).min(1, "Danh sách gói không được để trống"),
+    })).optional(),
 });
 
 export type IAgencyPriceRequest = z.infer<typeof agencyPriceSchema>;

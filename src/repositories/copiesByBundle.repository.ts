@@ -74,6 +74,14 @@ class CopiesByBundleRepository extends BaseRespository {
             .where("bundle_id IN (SELECT id FROM biz_bundle_by_agency WHERE agent_id = :agentId)", { agentId })
             .execute();
     }
+
+    public async bulkInsert(data: any[], queryRunner?: any) {
+        const repo = queryRunner ? queryRunner.manager.getRepository(BizCopiesByBundle) : AppDataSource.getRepository(BizCopiesByBundle);
+        return await repo.createQueryBuilder()
+            .insert()
+            .values(data)
+            .execute();
+    }
 }
 
 export const copiesByBundleRepository = new CopiesByBundleRepository();

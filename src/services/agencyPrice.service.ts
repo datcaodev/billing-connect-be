@@ -11,16 +11,46 @@ import { plainToInstance } from "class-transformer";
 
 class AgencyPriceService extends BaseService {
     public async createAgencyPriceTable(data: IAgencyPriceRequest) {
+        /**
+         * Luồng xử lý đồng bộ bảng giá đại lý (Bulk Sync):
+         * 1. Tìm đại lý và cập nhật công thức tính giá.
+         * 2. Xóa dữ liệu cũ (bundles & copies) trong transaction.
+         * 3. Chuẩn bị dữ liệu: Lấy mapping quốc gia/vùng hàng loạt (Batch Mapping).
+         * 4. Bulk Insert Bundles: Chèn hàng loạt lứa bundle mới và lấy về IDs kèm SKU.
+         * 5. Tính toán giá cuối (Final Price) dựa trên công thức và settlement/retail price.
+         * 6. Bulk Insert Copies: Chèn hàng loạt chi tiết giá (chia nhỏ chunk 1000 bản ghi).
+         */
         return await this.handleWithTransaction(async (queryRunner) => {
-            const { agencyGuid, packages, formula, amount = 0, remark } = data;
+            const { agencyGuid, packages: inputPackages, formula, amount = 0, remark, all } = data;
 
-            // 1. Tìm đại lý
+            let packagesToProcess = inputPackages || [];
+
+            // 1. Xác định dữ liệu nguồn: Đồng bộ 'Tất cả' hoặc theo 'Danh sách packages' truyền lên
+            if (all) {
+                // Fetch toàn bộ sản phẩm và giá gốc từ nguồn Billion Connect
+                const allProducts = await billionProductRepository.getAllProductsWithPrices();
+                packagesToProcess = allProducts.map((p: any) => ({
+                    skuId: p.sku_id,
+                    type: p.type,
+                    name: p.name,
+                    highFlowSize: p.high_flow_size,
+                    planType: p.plan_type,
+                    prices: p.prices.map((pr: any) => ({
+                        productSku: pr.product_sku,
+                        copies: pr.copies,
+                        retailPrice: pr.retail_price,
+                        settlementPrice: pr.settlement_price
+                    }))
+                }));
+            }
+
+            // 2. Kiểm tra đại lý & Cập nhật chiến lược giá (Formula)
             const agency = await agencyRepository.findByGuid(agencyGuid);
             if (!agency) {
                 throw new NotFoundError("Không tìm thấy đại lý");
             }
 
-            // Cập nhật công thức cho đại lý
+            // Lưu lại công thức tổng quát mà đại lý đang áp dụng
             await agencyRepository.updateAgencyFormula(agency.id, { type: formula, value: amount }, remark, queryRunner);
 
             // 2. Xóa các bảng giá cũ của đại lý
@@ -29,17 +59,19 @@ class AgencyPriceService extends BaseService {
             // Xóa gói (bundles) sau (có CASCADE nhưng xóa explicit cho chắc theo yêu cầu)
             await bundleByAgencyRepository.deleteByAgentId(agency.id, queryRunner);
 
-            // Duyệt qua danh sách các gói (packages) được gửi lên
-            for (const pkg of packages) {
-                // 3. Lấy thông tin quốc gia/vùng từ bảng billion
-                const productCountries = await billionProductRepository.getProductCountries(pkg.skuId);
+            // 3. Chuẩn bị dữ liệu Bulk Insert
+            const allCountryMappings = await billionProductRepository.getAllProductCountriesMapped();
+            const bundleValues: any[] = [];
+            const packagePriceMap = new Map<string, any[]>();
+
+            for (const pkg of packagesToProcess) {
+                const productCountries = allCountryMappings.get(pkg.skuId) || [];
                 let countryMcc = null;
                 let countryName = null;
                 let areaName = null;
 
                 if (productCountries.length > 0) {
                     areaName = productCountries[0].country_details?.continent || null;
-
                     if (productCountries.length === 1) {
                         const countryInfo = productCountries[0];
                         countryMcc = countryInfo.country_mcc;
@@ -47,8 +79,7 @@ class AgencyPriceService extends BaseService {
                     }
                 }
 
-                // 2. Lưu hoặc Cập nhật bảng BizBundleByAgency (liên kết giữa đại lý và bundle)
-                const bundleData = {
+                bundleValues.push({
                     agent_id: agency.id,
                     product_sku: pkg.skuId,
                     type: pkg.type,
@@ -59,18 +90,23 @@ class AgencyPriceService extends BaseService {
                     country_name: countryName,
                     area_name: areaName,
                     is_active: true
-                };
+                });
 
-                const bundle = await bundleByAgencyRepository.upsertBundle(bundleData, queryRunner);
+                packagePriceMap.set(pkg.skuId, pkg.prices);
+            }
 
-                const activeCopies: number[] = [];
-                // Duyệt qua từng cấu hình (copies) của gói đó
-                for (const price of pkg.prices) {
+            if (bundleValues.length === 0) return true;
+
+            // 4. Bulk Insert Bundles và lấy IDs (Kèm SKU để map)
+            const insertedBundles = await bundleByAgencyRepository.bulkInsert(bundleValues, queryRunner);
+
+            // 5. Chuẩn bị dữ liệu Price Copies
+            const copyValues: any[] = [];
+            for (const bundle of insertedBundles) {
+                const prices = packagePriceMap.get(bundle.product_sku) || [];
+
+                for (const price of prices) {
                     const copiesVal = parseInt(price.copies);
-                    activeCopies.push(copiesVal);
-
-                    // 3. Tính toán giá cuối cùng (final_price)
-                    // Quy tắc: Nếu công thức là RETAIL_PRICE thì lấy retailPrice làm gốc, các case khác lấy settlementPrice
                     let basePriceValue = price.settlementPrice;
                     if (formula === PriceAdjustType.RETAIL_PRICE) {
                         basePriceValue = price.retailPrice;
@@ -79,32 +115,29 @@ class AgencyPriceService extends BaseService {
                     const basePrice = new Decimal(basePriceValue);
                     let finalPrice = new Decimal(basePriceValue);
 
-                    // Áp dụng công thức tính toán dựa trên PriceAdjustType
                     switch (formula) {
-                        case PriceAdjustType.INCREASE_PERCENT: // Tăng theo %
+                        case PriceAdjustType.INCREASE_PERCENT:
                             finalPrice = basePrice.plus(basePrice.mul(amount).div(100));
                             break;
-                        case PriceAdjustType.DECREASE_PERCENT: // Giảm theo %
+                        case PriceAdjustType.DECREASE_PERCENT:
                             finalPrice = basePrice.minus(basePrice.mul(amount).div(100));
                             break;
-                        case PriceAdjustType.INCREASE_FIXED: // Cộng thêm tiền cố định
+                        case PriceAdjustType.INCREASE_FIXED:
                             finalPrice = basePrice.plus(amount);
                             break;
-                        case PriceAdjustType.DECREASE_FIXED: // Trừ bớt tiền cố định
+                        case PriceAdjustType.DECREASE_FIXED:
                             finalPrice = basePrice.minus(amount);
                             break;
-                        case PriceAdjustType.RETAIL_PRICE: // Giữ nguyên giá bán lẻ
+                        case PriceAdjustType.RETAIL_PRICE:
                             finalPrice = basePrice;
                             break;
                     }
 
-                    // 4. Lưu hoặc Cập nhật bảng BizCopiesByBundle (chi tiết giá cho từng mức copies)
-                    const copyData = {
+                    copyValues.push({
                         bundle_id: bundle.id,
                         copies: copiesVal,
                         base_price: parseFloat(basePrice.toFixed(4)),
                         final_price: parseFloat(finalPrice.toFixed(4)),
-                        // Lưu lại snapshot công thức để sau này đối soát hoặc hiển thị lại
                         formula_snapsot: {
                             formula: formula,
                             amount: amount,
@@ -112,9 +145,16 @@ class AgencyPriceService extends BaseService {
                             original_settlement_price: price.settlementPrice
                         },
                         is_active: true
-                    };
+                    });
+                }
+            }
 
-                    await copiesByBundleRepository.upsertCopy(copyData, queryRunner);
+            // 6. Bulk Insert Copies
+            if (copyValues.length > 0) {
+                // Chunk size to prevent too large query
+                const chunkSize = 1000;
+                for (let i = 0; i < copyValues.length; i += chunkSize) {
+                    await copiesByBundleRepository.bulkInsert(copyValues.slice(i, i + chunkSize), queryRunner);
                 }
             }
 

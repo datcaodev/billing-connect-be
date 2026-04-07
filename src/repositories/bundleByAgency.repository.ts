@@ -91,6 +91,16 @@ class BundleByAgencyRepository extends BaseRespository {
         return await qb.getManyAndCount();
     }
 
+    public async bulkInsert(data: any[], queryRunner?: any) {
+        const repo = queryRunner ? queryRunner.manager.getRepository(BizBundleByAgency) : AppDataSource.getRepository(BizBundleByAgency);
+        const result = await repo.createQueryBuilder()
+            .insert()
+            .values(data)
+            .returning("*")
+            .execute();
+        return result.raw;
+    }
+
     public async deleteByAgentId(agentId: number, queryRunner?: any) {
         const repo = queryRunner ? queryRunner.manager.getRepository(BizBundleByAgency) : AppDataSource.getRepository(BizBundleByAgency);
         return await repo.delete({ agent_id: agentId });

@@ -274,8 +274,11 @@ router.get("/all", agencyController.getAllAgencies);
  *             required:
  *               - agencyGuid
  *               - formula
- *               - packages
  *             properties:
+ *               all:
+ *                 type: boolean
+ *                 example: true
+ *                 description: "Nếu true, đồng bộ tất cả sản phẩm từ Billion Connect"
  *               agencyGuid:
  *                 type: string
  *                 format: uuid
@@ -318,18 +321,9 @@ router.get("/all", agencyController.getAllAgencies);
  *             agencyGuid: "uuid-agency"
  *             formula: "INCREASE_PERCENT"
  *             amount: 10
- *             remark: "Tăng 10% giá"
- *             packages:
- *               - skuId: "uuid-product-1"
- *                 type: "esim"
- *                 name: "Gói 10GB 7 Ngày"
- *                 highFlowSize: "10"
- *                 planType: "daily"
- *                 prices:
- *                   - productSku: "uuid-product-1"
- *                     copies: "1"
- *                     retailPrice: "150000"
- *                     settlementPrice: "130000"
+ *             remark: "Đồng bộ tất cả sản phẩm"
+ *             all: true
+ *             packages: []
  *     responses:
  *       200:
  *         description: Thành công
