@@ -1,0 +1,43 @@
+# tên workflow
+name: Node.js CI 
+
+# khi nào chạy
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+# các job
+jobs:
+  test:
+    # chạy trên môi trường nào 
+    runs-on: ubuntu-latest
+
+    strategy:
+      # test trên nhiều phiên bản node
+      matrix:
+        node-version: [22.5.1]
+
+# các bước tuần tự
+    steps:
+      - name: get code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint --if-present
+
+      - name: Run test
+        run: npm test --if-present
+
+      - name: Run build
+        run: npm run build --if-present
