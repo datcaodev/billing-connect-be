@@ -4,9 +4,9 @@ name: Node.js CI
 # khi nào chạy
 on:
   push:
-    branches: [dev]
+    branches: [main]
   pull_request:
-    branches: [dev]
+    branches: [main]
 
 # các job
 jobs:
