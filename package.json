@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:env": "env-cmd -f .env jest",
+    "test:env": "env-cmd -f .env.test jest",
     "dev": "env-cmd -f .env.development nodemon --watch src --ext ts --exec ts-node src/index.ts",
     "prod:test": "env-cmd -f .env.production nodemon --watch src --ext ts --exec ts-node src/index.ts",
     "lint": "eslint . --ext .ts",
