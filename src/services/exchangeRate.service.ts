@@ -15,6 +15,7 @@ class ExchangeRateService extends BaseService {
 
             const oldExchangeRate = await exchangeRateRepository.findData();
 
+            // chuyển thành dạng Decimal
             const newRate = new Decimal(rate)
             const oldRate = new Decimal(oldExchangeRate.rate)
 
