@@ -17,7 +17,7 @@ jobs:
     strategy:
       # test trên nhiều phiên bản node
       matrix:
-        node-version: [22.5.1]
+        node-version: [22.5.1, 18]
 
 # các bước tuần tự
     steps:
