@@ -11,3 +11,4 @@ export * from './siteProductVariant.repository';
 export * from './siteProductOptionPrice.repository';
 export * from './siteProductCategoryMapping.repository';
 export * from './siteCategory.repository';
+export * from './mvAgencyPrice.repository';

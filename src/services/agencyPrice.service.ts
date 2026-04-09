@@ -1,5 +1,5 @@
 import { BaseService } from "../core/baseService.core";
-import { agencyRepository, billionProductRepository, bundleByAgencyRepository, copiesByBundleRepository } from "../repositories";
+import { agencyRepository, billionProductRepository, bundleByAgencyRepository, copiesByBundleRepository, mvAgencyPriceRepository } from "../repositories";
 import { IAgencyPriceRequest, IGetAgencyPackagesQuery, IGetAgencyPackagesFilterQuery, IUpdateAgencyPackagePrice, IGetAgencyPackagesAllQuery } from "../schemas/agencyPrice.schema";
 import { PriceAdjustType } from "../enums/formula.enum";
 import Decimal from "decimal.js";
@@ -10,6 +10,72 @@ import { AgencyPackageDto, AgencyPackagesAllDto } from "../dto/agencyPrice.dto";
 import { plainToInstance } from "class-transformer";
 
 class AgencyPriceService extends BaseService {
+    public async getAgencyPackagesFilterMv(agencyGuid: string, query: IGetAgencyPackagesFilterQuery) {
+        // 1. Tìm đại lý (để validate guid tồn tại)
+        const agency = await agencyRepository.findByGuid(agencyGuid);
+        if (!agency) {
+            throw new NotFoundError("Không tìm thấy đại lý");
+        }
+
+        const { page, size, sortBy, productSku, name, countryMcc, areaName } = query;
+        const pagination = getPagination({ page, size, sortBy });
+
+        const countryMccArray = Array.isArray(countryMcc)
+            ? countryMcc
+            : (typeof (countryMcc as any) === "string" ? (countryMcc as any).split(",").map((v: any) => v.trim()).filter((v: any) => v !== "") : undefined);
+
+        // 2. Lấy dữ liệu từ Materialized View
+        // Lưu ý: MV hiện tại đang hardcode agent_id = 16 trong migration.
+        const [rows, total] = await mvAgencyPriceRepository.findActiveBundlesFiltered(
+            agency.id,
+            { productSku, name, countryMcc: countryMccArray, areaName },
+            pagination
+        );
+
+        // 3. Group dữ liệu theo bundle (sku_guid)
+        const bundlesMap = new Map<string, any>();
+        for (const row of rows) {
+            if (!bundlesMap.has(row.sku_guid)) {
+                bundlesMap.set(row.sku_guid, {
+                    guid: row.sku_guid,
+                    skuId: row.product_sku,
+                    name: row.name,
+                    type: row.type,
+                    highFlowSize: row.high_flow_size.toString(),
+                    planType: row.plan_type,
+                    countryMcc: row.country_mcc,
+                    countryName: row.country_name,
+                    areaName: row.area_name,
+                    prices: []
+                });
+            }
+
+            const bundle = bundlesMap.get(row.sku_guid);
+            const snapshot = row.formula_snapsot && typeof row.formula_snapsot === 'object' 
+                ? row.formula_snapsot 
+                : (typeof row.formula_snapsot === 'string' ? JSON.parse(row.formula_snapsot) : {});
+
+            bundle.prices.push({
+                guid: row.copies_guid,
+                productSku: row.product_sku,
+                copies: row.copies,
+                retailPrice: snapshot.original_retail_price || row.base_price.toString(),
+                settlementPrice: snapshot.original_settlement_price || row.base_price.toString(),
+                finalPrice: row.final_price?.toString()
+            });
+        }
+
+        const packagesList = Array.from(bundlesMap.values());
+
+        return mapPaginatedData({
+            dtoClass: AgencyPackageDto,
+            entities: packagesList,
+            skip: pagination.skip,
+            take: pagination.take,
+            total
+        });
+    }
+
     public async createAgencyPriceTable(data: IAgencyPriceRequest) {
         /**
          * Luồng xử lý đồng bộ bảng giá đại lý (Bulk Sync):

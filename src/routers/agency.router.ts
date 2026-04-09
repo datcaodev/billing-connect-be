@@ -482,6 +482,55 @@ router.get("/packages/:agencyGuid/detail", validateRequest(agencyGuidParamSchema
 
 /**
  * @swagger
+ * /api/v1/billion-connect/agency/packages/{agencyGuid}/filter-mv:
+ *   get:
+ *     summary: Lấy danh sách gói của đại lý (Sử dụng Materialized View)
+ *     tags: [Agency]
+ *     parameters:
+ *       - in: path
+ *         name: agencyGuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: size
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *       - in: query
+ *         name: productSku
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: countryMcc
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *       - in: query
+ *         name: areaName
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Thành công
+ */
+router.get("/packages/:agencyGuid/filter-mv", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesFilterQuerySchema, ["query"]), agencyPriceController.getAgencyPackagesFilterMv);
+
+/**
+ * @swagger
  * /api/v1/billion-connect/agency/packages/{agencyGuid}/filter:
  *   get:
  *     summary: Lấy danh sách gói của đại lý (có filter theo Vùng/Quốc gia)

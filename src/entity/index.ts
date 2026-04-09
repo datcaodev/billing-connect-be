@@ -19,3 +19,4 @@ export * from "./order.entity";
 export * from "./orderItem.entity";
 export * from "./orderDetail.entity";
 export * from "./orderStatusHistory.entity";
+export * from "./mvAgencyPrice.entity";

@@ -61,6 +61,25 @@ class AgencyPriceController extends BaseController {
         );
     };
 
+    public getAgencyPackagesFilterMv = async (
+        req: AuthenticatedRequest<object, object, any, any>,
+        res: Response,
+        next: NextFunction
+    ) => {
+        return this.handleWithTryCatch(
+            async () => {
+                const { agencyGuid } = req.params as any;
+                const data = await agencyPriceService.getAgencyPackagesFilterMv(agencyGuid, req.query);
+                return ServiceResponse.success({
+                    message: "Lấy bảng giá đại lý thành công (MV)",
+                    data
+                });
+            },
+            res,
+            next
+        );
+    };
+
     public getAgencyPackagesFilter = async (
         req: AuthenticatedRequest<object, object, any, any>,
         res: Response,
