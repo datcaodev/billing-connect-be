@@ -527,8 +527,9 @@ router.get("/packages/:agencyGuid/detail", validateRequest(agencyGuidParamSchema
  *       200:
  *         description: Thành công
  */
-router.get("/packages/:agencyGuid/filter-mv", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesFilterQuerySchema, ["query"]), agencyPriceController.getAgencyPackagesFilterMv);
+router.get("/packages/:agencyGuid/filter", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesFilterQuerySchema, ["query"]), agencyPriceController.getAgencyPackagesFilterMv);
 
+// api này đã đc thay thế bởi api /packages/:agencyGuid/filter 
 /**
  * @swagger
  * /api/v1/billion-connect/agency/packages/{agencyGuid}/filter:
@@ -578,7 +579,7 @@ router.get("/packages/:agencyGuid/filter-mv", validateRequest(agencyGuidParamSch
  *       200:
  *         description: Thành công
  */
-router.get("/packages/:agencyGuid/filter", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesFilterQuerySchema, ["query"]), agencyPriceController.getAgencyPackagesFilter);
+router.get("/packages/:agencyGuid/filter-not-mv", validateRequest(agencyGuidParamSchema, ["params"]), validateRequest(getAgencyPackagesFilterQuerySchema, ["query"]), agencyPriceController.getAgencyPackagesFilter);
 
 /**
  * @swagger
