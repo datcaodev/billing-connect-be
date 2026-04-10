@@ -1,1 +1,0 @@
-{"version":3,"file":"baseModel.core.js","sourceRoot":"","sources":["../../src/core/baseModel.core.ts"],"names":[],"mappings":";;;AAAA,MAAa,SAAS;IACV,KAAK,CAAC,YAAY,CAC1B,aAA+B;QAE/B,IAAI,CAAC;YACH,OAAO,MAAM,aAAa,EAAE,CAAC;QAC/B,CAAC;QAAC,OAAO,KAAK,EAAE,CAAC;YACf,MAAM,GAAG,KAAK,OAAO,IAAI,CAAC,WAAW,CAAC,IAAI,EAAE,CAAC;QAC/C,CAAC;IACH,CAAC;CACF;AAVD,8BAUC"}

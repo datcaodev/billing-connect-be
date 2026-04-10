@@ -12,7 +12,7 @@
     "dev": "env-cmd -f .env.development nodemon --watch src --ext ts --exec ts-node src/index.ts",
     "prod:test": "env-cmd -f .env.production nodemon --watch src --ext ts --exec ts-node src/index.ts",
     "lint": "eslint . --ext .ts",
-    "typeorm:prod": "env-cmd -f .env.production tsx ./node_modules/typeorm/cli.js -d ./src/config/data-source.ts",
+    "typeorm:prod": "node ./node_modules/typeorm/cli.js -d dist/config/data-source.js",
     "typeorm:prod:base": "env-cmd -f .env.production tsx ./node_modules/typeorm/cli.js",
     "migration:generate:prod": "npm run typeorm:prod -- migration:generate ./src/migration/%npm_config_name%",
     "migration:create:prod": "npm run typeorm:prod:base -- migration:create ./src/migration/%npm_config_name%",
