@@ -17,9 +17,6 @@ export class BizCopiesByBundle extends BaseTimeEntity {
     @Column({ type: "boolean", default: true, nullable: true })
     is_active: boolean;
 
-    @Column({ type: "boolean", default: true, nullable: true })
-    is_default: boolean;
-
     @Column({ type: "integer", nullable: false })
     copies: number;
 

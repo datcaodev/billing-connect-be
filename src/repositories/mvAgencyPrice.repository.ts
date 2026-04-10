@@ -12,27 +12,51 @@ class MvAgencyPriceRepository extends BaseRespository {
         pagination: { skip: number; take: number; orderBy: FindOptionsOrderValue }
     ) {
         return this.handleWithTryCatch(async () => {
-            const query = this.repository.createQueryBuilder("mv")
+            // 1. Khởi tạo query builder với các filter cơ bản
+            const baseQuery = this.repository.createQueryBuilder("mv")
                 .where("1=1");
 
             if (filters.productSku) {
-                query.andWhere("mv.product_sku ILIKE :productSku", { productSku: `%${filters.productSku}%` });
+                baseQuery.andWhere("mv.product_sku ILIKE :productSku", { productSku: `%${filters.productSku}%` });
             }
             if (filters.name) {
-                query.andWhere("mv.name ILIKE :name", { name: `%${filters.name}%` });
+                baseQuery.andWhere("mv.name ILIKE :name", { name: `%${filters.name}%` });
             }
             if (filters.countryMcc && filters.countryMcc.length > 0) {
-                query.andWhere("mv.country_mcc IN (:...countryMcc)", { countryMcc: filters.countryMcc });
+                baseQuery.andWhere("mv.country_mcc IN (:...countryMcc)", { countryMcc: filters.countryMcc });
             }
             if (filters.areaName) {
-                query.andWhere("mv.area_name = :areaName", { areaName: filters.areaName });
+                baseQuery.andWhere("mv.area_name = :areaName", { areaName: filters.areaName });
             }
 
-            query.orderBy("mv.product_sku", pagination.orderBy as "ASC" | "DESC")
-                .skip(pagination.skip)
-                .take(pagination.take);
+            // 2. Lấy danh sách SKU duy nhất có phân trang
+            const skuQuery = baseQuery.clone()
+                .select("DISTINCT mv.product_sku", "product_sku")
+                .orderBy("mv.product_sku", pagination.orderBy as "ASC" | "DESC")
+                .offset(pagination.skip)
+                .limit(pagination.take);
 
-            return await query.getManyAndCount();
+            const skuResult = await skuQuery.getRawMany();
+            const skus = skuResult.map(r => r.product_sku);
+
+            if (skus.length === 0) {
+                return [[], 0] as [MvAgencyPrice[], number];
+            }
+
+            // 3. Đếm tổng số SKU duy nhất
+            const totalResult = await baseQuery.clone()
+                .select("COUNT(DISTINCT mv.product_sku)", "count")
+                .getRawOne();
+            const total = parseInt(totalResult?.count || "0");
+
+            // 4. Lấy đầy đủ dữ liệu cho các SKU đã tìm được
+            const finalData = await this.repository.createQueryBuilder("mv")
+                .where("mv.product_sku IN (:...skus)", { skus })
+                .orderBy("mv.product_sku", pagination.orderBy as "ASC" | "DESC")
+                .addOrderBy("mv.copies", "ASC")
+                .getMany();
+
+            return [finalData, total] as [MvAgencyPrice[], number];
         });
     }
 
