@@ -7,10 +7,10 @@ export class BillionProductCountry {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     product_sku: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     country_mcc: string;
 
     @ManyToOne(() => BillionProduct)

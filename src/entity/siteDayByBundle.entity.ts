@@ -7,19 +7,19 @@ export class SiteDayByBundle extends BaseTimeEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: false })
+    @Column({ type: "integer", nullable: false })
     site_product_id: number;
 
-    @Column({ length: 100, nullable: false })
+    @Column({ type: "varchar", length: 100, nullable: false })
     product_sku: string;
 
     @Column({ type: "numeric", precision: 12, scale: 2, nullable: false })
     base_price: number;
 
-    @Column({ nullable: false })
+    @Column({ type: "varchar", nullable: false })
     name: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "integer", nullable: true })
     discount_id: number;
 
     @ManyToOne(() => SiteDiscount)

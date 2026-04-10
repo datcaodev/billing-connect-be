@@ -12,35 +12,35 @@ export class BizBundleByAgency extends BaseTimeEntity {
     guid: string;
 
     @Index("idx_bundle_agent")
-    @Column({ nullable: false })
+    @Column({ type: "integer", nullable: false })
     agent_id: number;
 
     @Index("idx_bundle_product")
-    @Column({ nullable: false })
+    @Column({ type: "varchar", nullable: false })
     product_sku: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     name: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     country_mcc: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     country_name: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     area_name: string;
 
-    @Column({ default: true, nullable: true })
+    @Column({ type: "boolean", default: true, nullable: true })
     is_active: boolean;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     high_flow_size: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     plan_type: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     type: string;
 
     @ManyToOne(() => BizAgency)

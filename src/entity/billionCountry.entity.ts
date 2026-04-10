@@ -5,15 +5,15 @@ export class BillionCountry {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ unique: true, nullable: true })
+    @Column({ type: "varchar", unique: true, nullable: true })
     mcc: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     name: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     continent: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     url: string;
 }

@@ -11,13 +11,16 @@ export class BizCopiesByBundle extends BaseTimeEntity {
     guid: string;
 
     @Index("idx_copies_bundle")
-    @Column({ nullable: false })
+    @Column({ type: "integer", nullable: false })
     bundle_id: number;
 
-    @Column({ default: true, nullable: true })
+    @Column({ type: "boolean", default: true, nullable: true })
     is_active: boolean;
 
-    @Column({ nullable: false })
+    @Column({ type: "boolean", default: true, nullable: true })
+    is_default: boolean;
+
+    @Column({ type: "integer", nullable: false })
     copies: number;
 
     @Column({ type: "numeric", precision: 12, scale: 4, nullable: true })

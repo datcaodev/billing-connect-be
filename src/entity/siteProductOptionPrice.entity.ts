@@ -9,21 +9,21 @@ export class SiteProductOptionPrice extends BaseTimeEntity {
     @Column({ type: "uuid", unique: true, nullable: true, default: () => "gen_random_uuid()" })
     guid: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "integer", nullable: true })
     site_product_id: number;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     product_sku: string;
 
-    @Column({ nullable: false })
+    @Column({ type: "integer", nullable: false })
     copies: number;
 
     @Column({ type: "numeric", precision: 12, scale: 2, nullable: true })
     retail_price: number;
 
-    @Column({ nullable: true })
+    @Column({ type: "integer", nullable: true })
     discount_id: number;
 
-    @Column({ default: 'CN' })
+    @Column({ type: "varchar", default: 'CN' })
     currency: string;
 }

@@ -5,14 +5,20 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
+    "start:prod": "env-cmd -f .env.production node dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:env": "env-cmd -f .env.test jest",
     "dev": "env-cmd -f .env.development nodemon --watch src --ext ts --exec ts-node src/index.ts",
     "prod:test": "env-cmd -f .env.production nodemon --watch src --ext ts --exec ts-node src/index.ts",
     "lint": "eslint . --ext .ts",
-    "migration:prod": "env-cmd -f .env.production npx tsx ./node_modules/typeorm/cli.js migration:generate ./src/migration/AddOtpTable -d ./src/config/data-source.ts",
-    "migration:dev": "env-cmd -f .env.development npx tsx ./node_modules/typeorm/cli.js migration:generate ./src/migration/AddOtpTable -d ./src/config/data-source.ts"
+    "typeorm:prod": "env-cmd -f .env.production tsx ./node_modules/typeorm/cli.js -d ./src/config/data-source.ts",
+    "typeorm:prod:base": "env-cmd -f .env.production tsx ./node_modules/typeorm/cli.js",
+    "migration:generate:prod": "npm run typeorm:prod -- migration:generate ./src/migration/%npm_config_name%",
+    "migration:create:prod": "npm run typeorm:prod:base -- migration:create ./src/migration/%npm_config_name%",
+    "migration:run:prod": "npm run typeorm:prod -- migration:run",
+    "migration:revert:prod": "npm run typeorm:prod -- migration:revert",
+    "migration:show:prod": "npm run typeorm:prod -- migration:show"
   },
   "keywords": [],
   "author": "",
@@ -44,6 +50,7 @@
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.0"
   },
@@ -94,6 +101,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.22",
+    "typeorm-ts-node-esm": "^0.3.20",
     "uuid": "^11.0.5",
     "zod": "^3.24.1"
   }

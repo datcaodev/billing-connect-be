@@ -8,10 +8,10 @@ export class SiteProductCategoryMapping extends BaseTimeEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: false })
+    @Column({ type: "integer", nullable: false })
     product_id: number;
 
-    @Column({ nullable: false })
+    @Column({ type: "integer", nullable: false })
     category_id: number;
 
     @ManyToOne(() => SiteProduct)

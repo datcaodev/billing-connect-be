@@ -18,6 +18,7 @@ import { SiteProductPaginationDto, SiteProductOptionPriceDto, SiteProductVariant
 import { plainToInstance } from "class-transformer";
 import { Decimal } from 'decimal.js';
 import { NotFoundError } from "../utils/errors/NotFoundError.error";
+import { mvAgencyPriceRepository } from "../repositories";
 
 class SiteProductService extends BaseService {
     /**
@@ -25,7 +26,7 @@ class SiteProductService extends BaseService {
      * @param data Dữ liệu sản phẩm từ request
      */
     public async createSiteProduct(data: ISiteProductRequest) {
-        return await this.handleWithTransaction(async (queryRunner) => {
+        const result = await this.handleWithTransaction(async (queryRunner) => {
             const { name, desc, imageUrl, categoryGuids, variants } = data;
 
             // 1. Kiểm tra sự tồn tại của các danh mục
@@ -42,9 +43,9 @@ class SiteProductService extends BaseService {
                 guid: uuidv4(),
                 name,
                 desc,
-                image_url: imageUrl, // Mapping camelCase to snake_case entity field
-                type: 'esim', // Mặc định là esim
-                status: 'active', // Trạng thái mặc định là active
+                image_url: imageUrl,
+                type: 'esim',
+                status: 'active',
                 is_deleted: false,
                 slug
             }, queryRunner);
@@ -59,7 +60,6 @@ class SiteProductService extends BaseService {
 
             // 5. Xử lý lưu các gói (Variants) và bảng giá chi tiết
             for (const variantData of variants) {
-                // Lưu thông tin biến thể (liên kết site_product_id với productSku của nhà cung cấp)
                 await siteProductVariantRepository.upsertVariant({
                     site_product_id: product.id,
                     product_sku: variantData.productSku,
@@ -70,16 +70,13 @@ class SiteProductService extends BaseService {
                     plan_type: variantData.planType
                 }, queryRunner);
 
-                // Lưu bảng giá chi tiết cho từng số ngày/dung lượng của gói
                 for (const optionData of variantData.options) {
-                    // Lấy giá bán lẻ từ cấu hình gói (biz_copies_by_bundle)
                     const bundleCopy = await copiesByBundleRepository.getPriceBySkuAndCopies(variantData.productSku, optionData.copies);
 
                     if (!bundleCopy) {
                         throw new ConflictError(`Không tìm thấy cấu hình giá cho SKU: ${variantData.productSku} với ${optionData.copies} copies`);
                     }
 
-                    // Kiểm tra và lấy discount_id từ discountGuid nếu có
                     let discountId: number | undefined = undefined;
                     if (optionData.discountGuid) {
                         const discount = await discountRepository.findByGuid(optionData.discountGuid);
@@ -95,13 +92,18 @@ class SiteProductService extends BaseService {
                         copies: optionData.copies,
                         retail_price: bundleCopy.final_price,
                         discount_id: discountId,
-                        currency: 'CNY' // Mặc định là nhân dân tệ theo thiết kế entity
+                        currency: 'CNY'
                     }, queryRunner);
                 }
             }
 
             return product;
         });
+
+        // 6. Đồng bộ bảng mv_agency_price (Phải chạy ngoài transaction block)
+        await mvAgencyPriceRepository.refreshMvAgencyPrice();
+
+        return result;
     }
 
     /**
@@ -382,7 +384,7 @@ class SiteProductService extends BaseService {
      * @param guid GUID của sản phẩm cần xóa
      */
     public async deleteSiteProduct(guid: string) {
-        return await this.handleWithTransaction(async (queryRunner) => {
+        const result = await this.handleWithTransaction(async (queryRunner) => {
             // 1. Kiểm tra sản phẩm có tồn tại không
             const product = await siteProductRepository.findByGuid(guid);
             if (!product) {
@@ -400,6 +402,11 @@ class SiteProductService extends BaseService {
 
             return true;
         });
+
+        // 5. Đồng bộ bảng mv_agency_price (Phải chạy ngoài transaction block)
+        await mvAgencyPriceRepository.refreshMvAgencyPrice();
+
+        return result;
     }
 
     /**
@@ -415,6 +422,11 @@ class SiteProductService extends BaseService {
             .replace(/(\s+)/g, "-")
             .replace(/-+/g, "-")
             .replace(/^-+|-+$/g, "");
+    }
+
+    public async refreshAgencyPriceMv() {
+        await mvAgencyPriceRepository.refreshMvAgencyPrice();
+        return true;
     }
 }
 

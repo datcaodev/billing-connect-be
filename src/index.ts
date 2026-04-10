@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { app, logger } from "./config/sever.config";
 import { env } from "./utils/envConfig.utils";
 import appRouter from "./routers"; // Import router

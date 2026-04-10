@@ -6,13 +6,13 @@ export class SyncRequest {
     @Index("ix_sync_requests_id")
     id: number;
 
-    @Column({ nullable: false })
+    @Column({ type: "varchar", nullable: false })
     saga_name: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     step: string;
 
-    @Column({ nullable: false })
+    @Column({ type: "varchar", nullable: false })
     status: string;
 
     @Column({ type: "text", nullable: true })

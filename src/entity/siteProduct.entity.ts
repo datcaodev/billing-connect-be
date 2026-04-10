@@ -12,18 +12,18 @@ export class SiteProduct extends BaseTimeEntity {
     @Column({ type: "varchar", length: 500, nullable: true })
     name: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     type: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     image_url: string;
 
     @Column({ type: "text", nullable: true })
     desc: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     status: string;
 
-    @Column({ unique: true, nullable: true })
+    @Column({ type: "varchar", unique: true, nullable: true })
     slug: string;
 }

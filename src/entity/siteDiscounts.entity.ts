@@ -9,16 +9,16 @@ export class SiteDiscount extends BaseTimeEntity {
     @Column({ type: "uuid", unique: true, nullable: true, default: () => "gen_random_uuid()" })
     guid: string;
 
-    @Column({ length: 255, unique: true, nullable: true })
+    @Column({ type: "varchar", length: 255, unique: true, nullable: true })
     name: string;
 
-    @Column({ length: 10, nullable: false })
+    @Column({ type: "varchar", length: 10, nullable: false })
     type: string;
 
     @Column({ type: "numeric", precision: 10, scale: 2, nullable: false })
     value: number;
 
-    @Column({ nullable: true })
+    @Column({ type: "boolean", nullable: true })
     is_active: boolean;
 
     @Column({ type: 'timestamptz', nullable: true })
@@ -27,9 +27,9 @@ export class SiteDiscount extends BaseTimeEntity {
     @Column({ type: 'timestamptz', nullable: true })
     end_date: Date;
 
-    @Column({ nullable: true })
+    @Column({ type: "integer", nullable: true })
     usage_limit: number;
 
-    @Column({ nullable: true })
+    @Column({ type: "integer", nullable: true })
     used_count: number;
 }

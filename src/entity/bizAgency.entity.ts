@@ -9,22 +9,22 @@ export class BizAgency extends BaseTimeEntity {
     @Column({ type: "uuid", unique: true, nullable: true, default: () => "gen_random_uuid()" })
     guid: string;
 
-    @Column({ length: 100, unique: true, nullable: false })
+    @Column({ type: "varchar", length: 100, unique: true, nullable: false })
     code: string;
 
-    @Column({ length: 255, nullable: false })
+    @Column({ type: "varchar", length: 255, nullable: false })
     name: string;
 
-    @Column({ length: 255, nullable: false })
+    @Column({ type: "varchar", length: 255, nullable: false })
     email: string;
 
-    @Column({ length: 255, nullable: false })
+    @Column({ type: "varchar", length: 255, nullable: false })
     phone: string;
 
-    @Column({ length: 255, nullable: true })
+    @Column({ type: "varchar", length: 255, nullable: true })
     address: string;
 
-    @Column({ length: 255, nullable: true })
+    @Column({ type: "varchar", length: 255, nullable: true })
     website: string;
 
     @Column({ type: "jsonb", nullable: true })

@@ -210,9 +210,26 @@ class SiteProductController extends BaseController {
                 }
 
                 const result = await siteProductService.updateSiteProduct(guid, data);
-                return ServiceResponse.success({
+                return ServiceResponse.successAndNotify({
                     message: "Cập nhật sản phẩm và đồng bộ hóa thành công",
                     data: result
+                });
+            },
+            res,
+            next
+        );
+    };
+
+    /**
+     * HTTP handler đồng bộ MV bảng giá đại lý
+     */
+    public refreshAgencyPriceMv = async (req: Request, res: Response, next: NextFunction) => {
+        return this.handleWithTryCatch(
+            async () => {
+                await siteProductService.refreshAgencyPriceMv();
+                return ServiceResponse.successAndNotify({
+                    message: "Đồng bộ dữ liệu bảng giá đại lý thành công",
+                    data: true
                 });
             },
             res,

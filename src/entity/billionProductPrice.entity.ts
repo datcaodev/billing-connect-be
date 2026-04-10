@@ -6,16 +6,16 @@ export class BillionProductPrice {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     product_sku: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     copies: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     retail_price: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     settlement_price: string;
 
     @ManyToOne(() => BillionProduct)

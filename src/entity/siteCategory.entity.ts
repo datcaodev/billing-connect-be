@@ -12,13 +12,13 @@ export class SiteCategory extends BaseTimeEntity {
     @Column({ type: "int4", nullable: true })
     parent: number;
 
-    @Column({ nullable: false })
+    @Column({ type: "varchar", nullable: false })
     code: string;
 
-    @Column({ nullable: false })
+    @Column({ type: "varchar", nullable: false })
     name: string;
 
-    @Column({ length: 10, nullable: true })
+    @Column({ type: "varchar", length: 10, nullable: true })
     country_mcc: string;
 
     @Column({ type: "smallint", nullable: true })

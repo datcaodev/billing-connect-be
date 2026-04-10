@@ -101,3 +101,5 @@ export const updateSiteProductSchema = z.object({
 });
 
 export type IUpdateSiteProductRequest = z.infer<typeof updateSiteProductSchema>;
+
+export const refreshAgencyPriceMvSchema = z.object({});

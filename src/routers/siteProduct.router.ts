@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { validateRequest, validateRequestWithForm } from "../middlewares/validateRequest.middleware";
-import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema, removeDiscountFromOptionsSchema, deleteSiteProductSchema, getVariantsAndOptionsSchema, updateSiteProductSchema } from "../schemas/siteProduct.schema";
+import { siteProductSchema, searchSiteProductSchema, getOptionPriceSchema, searchVariantsByDiscountSchema, removeDiscountFromOptionsSchema, deleteSiteProductSchema, getVariantsAndOptionsSchema, updateSiteProductSchema, refreshAgencyPriceMvSchema } from "../schemas/siteProduct.schema";
 import { siteProductController } from "../controllers/siteProduct.controller";
 import multer from "multer";
 
@@ -532,6 +532,32 @@ const siteProductRouter: Router = (() => {
         upload.single("image"),
         validateRequestWithForm(updateSiteProductSchema, ["body"]),
         siteProductController.updateSiteProduct
+    );
+
+
+
+    /**
+     * @swagger
+     * /api/v1/billion-connect/site-product/refresh-mv:
+     *   post:
+     *     summary: Đồng bộ lại dữ liệu bảng giá đại lý (Materialized View)
+     *     tags: [SiteProduct]
+     *     responses:
+     *       200:
+     *         description: Đồng bộ thành công
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               example:
+     *                 success: true
+     *                 message: "Đồng bộ dữ liệu bảng giá đại lý thành công"
+     *                 data: true
+     */
+    router.post(
+        "/refresh-mv",
+        validateRequest(refreshAgencyPriceMvSchema, ["body"]),
+        siteProductController.refreshAgencyPriceMv
     );
 
     return router;

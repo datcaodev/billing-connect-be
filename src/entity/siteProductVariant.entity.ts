@@ -3,22 +3,22 @@ import { BaseTimeEntity } from "../core/baseEntity.core";
 
 @Entity("site_product_variant")
 export class SiteProductVariant extends BaseTimeEntity {
-    @PrimaryColumn({ name: "site_product_id" })
+    @PrimaryColumn({ type: "int4", name: "site_product_id" })
     site_product_id: number;
 
-    @PrimaryColumn({ name: "product_sku" })
+    @PrimaryColumn({ type: "varchar", name: "product_sku" })
     product_sku: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     plan_type: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     name_original: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     name: string;
 
-    @Column({ nullable: true })
+    @Column({ type: "varchar", nullable: true })
     status: string;
 
     @Column({ type: "uuid", unique: true, nullable: true, default: () => "gen_random_uuid()" })
