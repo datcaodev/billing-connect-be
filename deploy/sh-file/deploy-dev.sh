@@ -1,5 +1,5 @@
 # để chạy ở local
-# DOCKER_USERNAME=codechub DOCKER_PASSWORD=xxxxx TAG=dev sh deploy/sh-file/_deploy-dev.sh
+# DOCKER_USERNAME=codechub DOCKER_PASSWORD=123@4567 TAG=dev sh deploy/sh-file/_deploy-dev.sh
 
 #!/bin/sh
 set -e
