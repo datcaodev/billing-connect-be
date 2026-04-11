@@ -17,7 +17,7 @@ jobs:
     strategy:
       # test trên nhiều phiên bản node
       matrix:
-        node-version: [22.5.1, 18]
+        node-version: [22.5.1]
 
 # các bước tuần tự
     steps:
@@ -54,7 +54,8 @@ jobs:
           password: ${{ secrets.DEV_PASSWORD }}
           port: ${{ secrets.DEV_PORT }}
           script: |
-            cd /billion_connect
+            ls -l
+            cd /home/thangp/billion_connect
             export TAG=$(echo ${{ github.sha }} | cut -c1-7)
             docker compose pull billion_connect
             docker compose up -d
