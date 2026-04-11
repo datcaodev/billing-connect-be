@@ -86,3 +86,6 @@ Sau khi khởi chạy ứng dụng, bạn có thể truy cập tài liệu API t
 
 ---
 *Lưu ý: Luôn đảm bảo bạn đã cấu hình đúng môi trường trong file `.env` trước khi thực hiện các lệnh liên quan đến database.*
+
+## 📜 Tài liệu bổ sung
+- [Hướng dẫn Setup CI/CD với GitHub Actions](./README_CICD.md)
