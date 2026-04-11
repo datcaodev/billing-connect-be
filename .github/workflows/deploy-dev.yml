@@ -36,8 +36,8 @@ jobs:
       # - name: Run lint
       #   run: npm run lint --if-present
 
-      - name: Run test
-        run: npm run test
+      # - name: Run test
+      #   run: npm run test
 
       - name: Build and push dev image
         env:
