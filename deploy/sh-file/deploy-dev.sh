@@ -1,30 +1,37 @@
-echo "Pull image tag new..."
-read -p "Enter Tag image new version: " tag
-DOCKER_USERNAME="codechub"
-DOCKER_PASSWORD="123@45678"
-IMAGE_NAME="billion_connect";
-echo  "Tags: $tag";
-echo "==============START BUILD DOCKER=============="
-docker build -t "$IMAGE_NAME:$tag" -f deploy/docker/Dockerfile-dev .
-echo "BUILD DOCKER";
-sleep 10
+# để chạy ở local
+# DOCKER_USERNAME=codechub DOCKER_PASSWORD=xxxxx TAG=dev sh deploy/sh-file/_deploy-dev.sh
 
-echo "Auto login to $DOCKER_USERNAME"
-docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD
+#!/bin/sh
+set -e
 
-# echo "login manual...";
-# echo "login to $DOCKER_USERNAME"
-# echo "password:"
-# read pass
-# echo "$pass" | docker login --username=$DOCKER_USERNAME --password-stdin
+DOCKER_USERNAME="${DOCKER_USERNAME}"
+DOCKER_PASSWORD="${DOCKER_PASSWORD}"
+IMAGE_NAME="billion_connect"
+TAG="${TAG:-dev}"
 
-echo "Start push dockerhub";
-docker tag "$IMAGE_NAME:$tag" "$DOCKER_USERNAME/$IMAGE_NAME:$tag"
-sleep 10
-docker push  "$DOCKER_USERNAME/$IMAGE_NAME:$tag"
-echo "Push dockerhub successfully!";
-sleep 10
-docker image prune -f
-echo "prune image!";
+if [ -z "$DOCKER_USERNAME" ] || [ -z "$DOCKER_PASSWORD" ]; then
+  echo "Missing DOCKER_USERNAME or DOCKER_PASSWORD"
+  exit 1
+fi
 
-sleep 30
+# nếu TAG là full SHA thì rút gọn 7 ký tự
+TAG=$(echo "$TAG" | cut -c1-7)
+
+echo "Tag: $TAG"
+echo "============== START BUILD DOCKER =============="
+
+docker build -t "$IMAGE_NAME:$TAG" -f deploy/docker/Dockerfile-dev .
+
+echo "Build Docker success"
+
+echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+echo "Start push Docker Hub"
+docker tag "$IMAGE_NAME:$TAG" "$DOCKER_USERNAME/$IMAGE_NAME:$TAG"
+docker push "$DOCKER_USERNAME/$IMAGE_NAME:$TAG"
+
+echo "Push Docker Hub successfully"
+
+docker image prune -f || true
+
+echo "Prune image done"

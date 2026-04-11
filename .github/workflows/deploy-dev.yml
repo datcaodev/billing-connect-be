@@ -1,0 +1,59 @@
+# tên workflow
+name: Deploy Dev
+
+# khi nào chạy
+on:
+  push:
+    branches: [deploy-dev]
+  pull_request:
+    branches: [deploy-dev]
+
+# các job
+jobs:
+  test:
+    # chạy trên môi trường nào 
+    runs-on: ubuntu-latest
+
+    strategy:
+      # test trên nhiều phiên bản node
+      matrix:
+        node-version: [22.5.1, 18]
+
+# các bước tuần tự
+    steps:
+      - name: get code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # - name: Run lint
+      #   run: npm run lint --if-present
+
+      - name: Run test
+        run: npm run test:env --if-present
+
+      - name: Build and push dev image
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          TAG: ${{ github.sha }}
+        run: sh deploy/sh-file/_deploy-dev.sh
+
+      - name: Deploy to dev server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USER }}
+          password: ${{ secrets.DEV_PASSWORD }}
+          script: |
+            cd ${{ secrets.DEV_APP_PATH }}
+            export TAG=$(echo ${{ github.sha }} | cut -c1-7)
+            docker compose pull
+            docker compose up -d
