@@ -1,37 +1,44 @@
-# Bước 1: Sử dụng Node.js image để xây dựng ứng dụng Node.js
-FROM node:18.18-alpine
+# =====================
+# BUILD
+# =====================
+FROM node:18-alpine AS builder
 
-# Tạo thư mục cho ứng dụng
-RUN mkdir -p /home/node/app
+WORKDIR /app
 
-# Đặt thư mục làm việc
-WORKDIR /home/node/app
+COPY package*.json ./
+RUN npm ci
 
-# Copy package.json và package-lock.json vào container
-COPY package*.json /home/node/app/
-COPY pnpm-*.yaml /home/node/app/
-
-# Cài đặt pnpm nếu chưa có
-# RUN npm install -g pnpm
-
-# Cài đặt các package cần thiết
-RUN npm install
-
-# Copy tất cả các file của ứng dụng vào container
 COPY . .
 
-# Bước 2: Cài đặt Nginx
+RUN npm run build
+
+# =====================
+# RUN
+# =====================
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Cài nginx
 RUN apk add --no-cache nginx
 
-# Copy cấu hình Nginx vào trong container
-COPY /deploy/.nginx/nginx-dev.conf /etc/nginx/nginx.conf
+# Cài production dependencies
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Copy các file của ứng dụng Node.js đã build vào thư mục của Nginx
-COPY . /usr/share/nginx/html
+# Copy build output từ builder
+COPY --from=builder /app/dist ./dist
 
-# Expose các cổng cần thiết
-EXPOSE 80
-EXPOSE 3000
+# Copy file env vào container
+ARG ENV_FILE=.env.development
+COPY ${ENV_FILE} .env
 
-# Chạy cả ứng dụng Node.js và Nginx
-CMD ["sh", "-c", "npm run dev & nginx -g 'daemon off;'"]
+# Copy cấu hình nginx
+COPY deploy/.nginx/nginx-dev.conf /etc/nginx/nginx.conf
+
+# Tạo thư mục cần thiết cho nginx
+RUN mkdir -p /run/nginx
+
+EXPOSE 80 3000
+
+CMD ["sh", "-c", "nginx && node dist/index.js"]
