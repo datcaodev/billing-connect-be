@@ -55,7 +55,7 @@ jobs:
           port: ${{ secrets.DEV_PORT }}
           script: |
             ls -l
-            cd /home/thangp/billion_connect
+            cd billion-connect
             export TAG=$(echo ${{ github.sha }} | cut -c1-7)
             docker compose pull billion_connect
             docker compose up -d
